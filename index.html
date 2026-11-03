@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenangan Kita — Romantic Photo Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        romantic: {
+                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3', 300: '#fda4af', 400: '#fb7185',
+                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 800: '#9f1239', 900: '#881337'
+                        },
+                        blush: '#fff8f6',
+                        gold: '#d4af37'
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        handwritten: ['Caveat', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fff1f2; }
+        ::-webkit-scrollbar-thumb { background: #fda4af; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f43f5e; }
+
+        body {
+            background:
+                radial-gradient(1200px 600px at 10% -10%, #ffe4e6 0%, transparent 60%),
+                radial-gradient(900px 500px at 100% 0%, #fde7f3 0%, transparent 55%),
+                radial-gradient(900px 600px at 50% 110%, #fff0e6 0%, transparent 60%),
+                #fff8f6;
+            background-attachment: fixed;
+        }
+
+        /* Blob dekoratif */
+        .blob { position: fixed; border-radius: 9999px; filter: blur(70px); opacity: .45; pointer-events: none; z-index: 0; animation: floaty 14s ease-in-out infinite; }
+        .blob.b1 { width: 340px; height: 340px; background: #fda4af; top: 8%; left: -80px; }
+        .blob.b2 { width: 300px; height: 300px; background: #f9a8d4; bottom: 5%; right: -60px; animation-delay: -6s; }
+        @keyframes floaty { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-40px) scale(1.08); } }
+
+        #hearts-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(254, 205, 211, 0.55);
+        }
+
+        .text-gradient {
+            background: linear-gradient(120deg, #be123c 0%, #e11d48 40%, #db2777 70%, #d4af37 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        /* Animasi masuk */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+        .reveal { opacity: 0; animation: fadeUp .7s cubic-bezier(.2,.7,.2,1) forwards; }
+        @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-pop { animation: pop .28s cubic-bezier(.2,.8,.2,1); }
+        @keyframes beat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1); } 45% { transform: scale(1.12); } }
+        .heartbeat { animation: beat 1.8s ease-in-out infinite; }
+
+        /* Tombol pil */
+        .chip, .tab, .src-btn {
+            padding: .45rem 1rem; border-radius: 9999px; font-size: .8rem; font-weight: 500;
+            background: #fff; color: #64748b; border: 1px solid #fecdd3; transition: all .2s;
+        }
+        .chip:hover, .tab:hover, .src-btn:hover { background: #fff1f2; color: #be123c; }
+        .chip.active, .tab.active {
+            background: linear-gradient(135deg, #f43f5e, #ec4899); color: #fff; border-color: transparent;
+            box-shadow: 0 8px 18px -6px rgba(225, 29, 72, .45);
+        }
+        .tab { padding: .6rem 1.4rem; font-size: .88rem; font-weight: 600; }
+        .src-btn { padding: .4rem .5rem; border-radius: .75rem; font-size: .72rem; }
+        .src-btn.active { background: #fff1f2; color: #be123c; border-color: #fb7185; }
+        .seg-btn { padding: .4rem .8rem; border-radius: 9999px; font-size: .8rem; color: #fb7185; transition: all .2s; }
+        .seg-btn.active { background: #fff; color: #e11d48; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+
+        /* Input */
+        .field {
+            width: 100%; padding: .6rem .85rem; font-size: .85rem; border-radius: .9rem;
+            border: 1px solid #fecdd3; background: #fffafa; transition: all .2s; outline: none;
+        }
+        .field:focus { border-color: #fb7185; box-shadow: 0 0 0 4px rgba(251, 113, 133, .18); background: #fff; }
+        .field.emerald { border-color: #a7f3d0; background: #f8fffb; }
+        .field.emerald:focus { border-color: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .18); }
+        .lbl { display: block; font-size: .72rem; font-weight: 600; color: #475569; margin-bottom: .3rem; letter-spacing: .02em; }
+
+        /* Polaroid */
+        .polaroid {
+            background: #fff; padding: 12px 12px 16px; border-radius: 6px;
+            box-shadow: 0 14px 30px -12px rgba(225, 29, 72, .22), 0 4px 10px -4px rgba(0,0,0,.06);
+            transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
+            position: relative;
+        }
+        .polaroid::before {
+            content: ''; position: absolute; top: -9px; left: 50%; width: 64px; height: 20px;
+            transform: translateX(-50%) rotate(-3deg);
+            background: rgba(253, 224, 71, .38); border: 1px solid rgba(250, 204, 21, .25);
+            backdrop-filter: blur(1px); z-index: 2;
+        }
+        .polaroid:hover { transform: translateY(-8px) rotate(0deg) !important; box-shadow: 0 28px 40px -16px rgba(225, 29, 72, .3); }
+        .polaroid .actions { opacity: 0; transform: translateY(6px); transition: all .25s; }
+        .polaroid:hover .actions { opacity: 1; transform: translateY(0); }
+        @media (hover: none) { .polaroid .actions { opacity: 1; transform: none; } }
+
+        /* Kartu album */
+        .album-card { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s; }
+        .album-card:hover { transform: translateY(-6px); box-shadow: 0 30px 50px -22px rgba(5, 150, 105, .35); }
+
+        /* Hitung mundur */
+        .cd-box {
+            background: rgba(255,255,255,.8); border: 1px solid #fecdd3; border-radius: 1.1rem;
+            min-width: 76px; padding: .7rem .6rem; text-align: center;
+            box-shadow: 0 10px 24px -14px rgba(225, 29, 72, .35);
+        }
+        @media (min-width: 640px) { .cd-box { min-width: 96px; padding: .9rem .8rem; } }
+        .cd-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.6rem; line-height: 1; color: #be123c; }
+        @media (min-width: 640px) { .cd-num { font-size: 2.1rem; } }
+        .cd-lbl { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: #fb7185; margin-top: .35rem; font-weight: 600; }
+
+        /* Viewer folder */
+        #album-view-modal.full { padding: 0; }
+        #album-view-modal.full #album-view-box { max-width: 100%; height: 100vh; border-radius: 0; }
+        .loader-ring { width: 38px; height: 38px; border-radius: 9999px; border: 3px solid #fecdd3; border-top-color: #f43f5e; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .nav-btn { width: 42px; height: 42px; border-radius: 9999px; background: rgba(255,255,255,.18); color: #fff; backdrop-filter: blur(8px); transition: all .2s; display: flex; align-items: center; justify-content: center; }
+        .nav-btn:hover { background: #fff; color: #e11d48; }
+
+        @media (prefers-reduced-motion: reduce) { .reveal, .blob, .heartbeat { animation: none; opacity: 1; } }
+    </style>
+</head>
+<body class="text-slate-800 font-sans min-h-screen relative overflow-x-hidden">
+
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <canvas id="hearts-canvas"></canvas>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- Header -->
+        <header class="sticky top-3 z-30 px-3 sm:px-6">
+            <div class="max-w-6xl mx-auto glass-card rounded-full shadow-lg shadow-rose-100/60 pl-3 pr-2 sm:pl-4 sm:pr-3 py-2 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-rose-200">
+                        <i class="fa-solid fa-heart heartbeat"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="font-serif text-lg sm:text-xl font-bold text-rose-900 leading-none truncate">Kenangan Kita</h1>
+                        <p class="font-handwritten text-base text-rose-500 -mt-0.5 leading-none hidden sm:block">Kisah Cinta & Momen Indah</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div id="sync-status-badge" class="hidden items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs">
+                        <i id="sync-status-icon" class="fa-solid fa-cloud"></i>
+                        <span id="sync-status-text" class="hidden sm:inline">Cloud Sync</span>
+                    </div>
+                    <button onclick="openAlbumModal()" title="Tambah folder pertemuan" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-3 sm:px-4 py-2 rounded-full shadow-md shadow-emerald-200 transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-brands fa-google-drive"></i>
+                        <span class="hidden sm:inline">Folder</span>
+                    </button>
+                    <button onclick="openPhotoModal()" title="Tambah foto" class="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-medium px-3 sm:px-4 py-2 rounded-full shadow-md shadow-rose-200 transition-all flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="hidden sm:inline">Foto</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-4 text-center">
+            <p class="reveal font-handwritten text-2xl text-rose-500" style="animation-delay:.05s">~ kisah kita, selamanya ~</p>
+            <h2 class="reveal font-serif text-4xl sm:text-6xl font-extrabold text-gradient leading-tight mt-1 mb-4" style="animation-delay:.15s">Galeri Abadi Cinta Kita</h2>
+            <p class="reveal max-w-xl mx-auto text-slate-600 text-sm sm:text-base font-light leading-relaxed" style="animation-delay:.25s">
+                Setiap foto menyimpan sejuta perasaan. Simpan, abadikan, dan kenang setiap detiknya di sini.
+            </p>
+
+            <!-- Counter -->
+            <div class="reveal mt-8" style="animation-delay:.35s">
+                <p class="text-[11px] tracking-[.25em] uppercase text-rose-400 font-semibold mb-3">
+                    <i class="fa-solid fa-hourglass-half mr-1"></i> Bersama Selama
+                </p>
+                <div class="flex justify-center gap-2 sm:gap-3 flex-wrap">
+                    <div class="cd-box"><div id="cd-days" class="cd-num">0</div><div class="cd-lbl">Hari</div></div>
+                    <div class="cd-box"><div id="cd-hours" class="cd-num">0</div><div class="cd-lbl">Jam</div></div>
+                    <div class="cd-box"><div id="cd-mins" class="cd-num">0</div><div class="cd-lbl">Menit</div></div>
+                    <div class="cd-box"><div id="cd-secs" class="cd-num">0</div><div class="cd-lbl">Detik</div></div>
+                </div>
+                <button onclick="openCounterSettings()" class="mt-4 text-xs text-rose-400 hover:text-rose-600 transition-colors">
+                    <i class="fa-solid fa-gear mr-1"></i><span id="cd-note">Ubah tanggal jadian</span>
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="reveal flex justify-center gap-2 sm:gap-3 mt-6 flex-wrap" style="animation-delay:.45s">
+                <span class="glass-card rounded-full px-4 py-1.5 text-xs text-slate-600"><i class="fa-solid fa-folder-open text-emerald-500 mr-1.5"></i><b id="stat-albums" class="text-slate-800">0</b> pertemuan</span>
+                <span class="glass-card rounded-full px-4 py-1.5 text-xs text-slate-600"><i class="fa-solid fa-image text-rose-400 mr-1.5"></i><b id="stat-photos" class="text-slate-800">0</b> foto</span>
+                <span class="glass-card rounded-full px-4 py-1.5 text-xs text-slate-600"><i class="fa-solid fa-heart text-rose-500 mr-1.5"></i><b id="stat-fav" class="text-slate-800">0</b> favorit</span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="reveal inline-flex gap-2 mt-8 p-1.5 glass-card rounded-full" style="animation-delay:.55s">
+                <button id="tab-albums" onclick="switchMainTab('albums')" class="tab active">
+                    📁 Folder Pertemuan (<span id="count-albums">0</span>)
+                </button>
+                <button id="tab-photos" onclick="switchMainTab('photos')" class="tab">
+                    🖼️ Foto Single
+                </button>
+            </div>
+        </section>
+
+        <!-- Main -->
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
+
+            <!-- VIEW 1: ALBUMS -->
+            <div id="main-albums-view" class="space-y-6">
+                <div id="albums-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"></div>
+
+                <div id="empty-albums-state" class="hidden text-center py-16 glass-card rounded-3xl border-2 border-dashed border-emerald-200">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-brands fa-google-drive"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-semibold text-rose-900 mb-1">Belum Ada Folder Pertemuan</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-4">Hubungkan folder Google Drive per pertemuan Anda (misal: "Pertemuan Ke-1", "Pertemuan Ke-2") ke dalam galeri ini.</p>
+                    <button onclick="openAlbumModal()" class="bg-emerald-500 text-white text-xs font-medium px-5 py-2.5 rounded-full hover:bg-emerald-600 transition-all shadow-md shadow-emerald-200">
+                        + Hubungkan Folder Drive Sekarang
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 2: SINGLE PHOTOS -->
+            <div id="main-photos-view" class="hidden">
+                <div class="glass-card rounded-3xl p-4 mb-10 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button data-cat="all" onclick="setFilter('all')" class="filter-btn chip active">Semua (<span id="count-all">0</span>)</button>
+                        <button data-cat="favorite" onclick="setFilter('favorite')" class="filter-btn chip">❤️ Favorit</button>
+                        <button data-cat="Kencan" onclick="setFilter('Kencan')" class="filter-btn chip">☕ Kencan</button>
+                        <button data-cat="Liburan" onclick="setFilter('Liburan')" class="filter-btn chip">✈️ Liburan</button>
+                        <button data-cat="Spesial" onclick="setFilter('Spesial')" class="filter-btn chip">🎉 Spesial</button>
+                        <button data-cat="Lainnya" onclick="setFilter('Lainnya')" class="filter-btn chip">💖 Lainnya</button>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="relative flex-grow md:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-300 text-xs"></i>
+                            <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari judul, catatan, lokasi..." class="field !pl-9 !rounded-full !py-2 !text-xs !bg-white">
+                        </div>
+                        <div class="flex bg-rose-100/80 rounded-full p-1">
+                            <button id="btn-grid-view" onclick="switchView('grid')" class="seg-btn active" title="Grid"><i class="fa-solid fa-table-cells-large"></i></button>
+                            <button id="btn-timeline-view" onclick="switchView('timeline')" class="seg-btn" title="Timeline"><i class="fa-solid fa-timeline"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10"></div>
+
+                <div id="gallery-timeline" class="hidden relative border-l-2 border-dashed border-rose-300 ml-4 sm:ml-8 space-y-8 my-8"></div>
+
+                <div id="empty-state" class="hidden text-center py-16 glass-card rounded-3xl border-2 border-dashed border-rose-200">
+                    <div class="w-16 h-16 bg-rose-100 text-rose-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-regular fa-images"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-semibold text-rose-900 mb-1">Belum Ada Kenangan di Sini</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-4">Tambahkan foto momen manis pertama Anda dan pasangan sekarang!</p>
+                    <button onclick="openPhotoModal()" class="bg-rose-500 text-white text-xs font-medium px-5 py-2.5 rounded-full hover:bg-rose-600 transition-all shadow-md shadow-rose-200">
+                        + Tambah Foto Sekarang
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="mt-auto py-8 text-center">
+            <div class="flex items-center justify-center gap-3 text-rose-300 mb-2">
+                <span class="h-px w-12 bg-rose-200"></span><i class="fa-solid fa-heart text-xs"></i><span class="h-px w-12 bg-rose-200"></span>
+            </div>
+            <p class="font-handwritten text-xl text-rose-400">Dibuat dengan cinta untuk mengabadikan setiap detik kita.</p>
+        </footer>
+    </div>
+
+    <!-- MODAL: Tambah / Edit Foto -->
+    <div id="photo-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-pop bg-white rounded-[28px] max-w-lg w-full p-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center pb-3 border-b border-rose-100">
+                <h3 id="modal-title" class="font-serif text-xl font-bold text-rose-900">Tambah Kenangan Baru</h3>
+                <button type="button" onclick="closePhotoModal()" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="photo-form" onsubmit="savePhoto(event)" class="space-y-4 py-4 overflow-y-auto flex-grow pr-1">
+                <input type="hidden" id="photo-id">
+
+                <div>
+                    <label class="lbl">Foto Kenangan</label>
+                    <div class="grid grid-cols-3 gap-1.5 mb-2">
+                        <button type="button" id="btn-src-file" onclick="setImgInputMode('file')" class="src-btn active">📁 HP/PC</button>
+                        <button type="button" id="btn-src-gdrive" onclick="setImgInputMode('gdrive')" class="src-btn"><i class="fa-brands fa-google-drive text-emerald-500 mr-0.5"></i> Drive</button>
+                        <button type="button" id="btn-src-url" onclick="setImgInputMode('url')" class="src-btn">🔗 Link Web</button>
+                    </div>
+
+                    <div id="input-container-file" class="border-2 border-dashed border-rose-200 rounded-2xl p-4 text-center hover:bg-rose-50/60 hover:border-rose-300 transition-all cursor-pointer relative">
+                        <input type="file" id="photo-file" accept="image/*" onchange="previewImageFile(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                        <div class="py-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-rose-400 mb-1"></i>
+                            <p class="text-xs text-slate-600">Klik atau seret foto ke sini</p>
+                            <span class="text-[10px] text-slate-400">PNG, JPG, WEBP hingga 5MB (otomatis dikompres)</span>
+                        </div>
+                    </div>
+
+                    <div id="input-container-gdrive" class="hidden space-y-2">
+                        <div class="relative">
+                            <i class="fa-brands fa-google-drive absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-500 text-xs"></i>
+                            <input type="text" id="photo-gdrive-url" oninput="handleGoogleDriveInput(this.value)" placeholder="Tempel link bagikan Google Drive di sini..." class="field !pl-9 !text-xs">
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-[11px] text-emerald-800 space-y-1">
+                            <p class="font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-info text-emerald-600"></i> Cara Pakai Link Google Drive:</p>
+                            <ol class="list-decimal list-inside space-y-0.5 text-emerald-700 font-light">
+                                <li>Buka foto di Google Drive & klik <b>Bagikan (Share)</b>.</li>
+                                <li>Ubah akses menjadi <b>"Siapa saja yang memiliki link"</b>.</li>
+                                <li>Salin link & tempelkan di atas. Sistem akan mengonversinya otomatis!</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div id="input-container-url" class="hidden">
+                        <input type="text" id="photo-url" oninput="previewImageUrl(this.value)" placeholder="https://images.unsplash.com/..." class="field !text-xs">
+                    </div>
+
+                    <div id="preview-box" class="hidden mt-3 relative rounded-2xl overflow-hidden border border-rose-200 bg-slate-100 shadow-inner">
+                        <img id="img-preview" src="" alt="Pratinjau" class="w-full h-48 object-cover">
+                        <button type="button" onclick="removePreview()" class="absolute top-2 right-2 bg-slate-900/60 text-white rounded-full w-7 h-7 text-xs flex items-center justify-center hover:bg-rose-600 transition-all">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="lbl">Judul Momen *</label>
+                    <input type="text" id="photo-title" required placeholder="Contoh: Kencan Pertama di Taman Sabuga" class="field">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="lbl">Tanggal *</label>
+                        <input type="date" id="photo-date" required class="field">
+                    </div>
+                    <div>
+                        <label class="lbl">Kategori</label>
+                        <select id="photo-category" class="field">
+                            <option value="Kencan">☕ Kencan</option>
+                            <option value="Liburan">✈️ Liburan</option>
+                            <option value="Spesial">🎉 Momen Spesial</option>
+                            <option value="Lainnya">💖 Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="lbl">Lokasi</label>
+                    <input type="text" id="photo-location" placeholder="Contoh: Bandung, Jawa Barat" class="field">
+                </div>
+
+                <div>
+                    <label class="lbl">Catatan Kenangan</label>
+                    <textarea id="photo-caption" rows="3" placeholder="Tuliskan cerita manis atau ungkapan perasaanmu saat momen ini..." class="field"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closePhotoModal()" class="px-4 py-2.5 text-xs font-medium text-slate-500 hover:bg-slate-100 rounded-full transition-all">Batal</button>
+                    <button type="submit" class="px-6 py-2.5 text-xs font-semibold bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full hover:from-rose-600 hover:to-pink-600 shadow-md shadow-rose-200 transition-all">Simpan Kenangan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Lightbox -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-6">
+        <div class="modal-pop relative max-w-5xl w-full bg-slate-900 rounded-[28px] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[92vh]">
+            <button type="button" onclick="closeLightbox()" class="absolute top-3 right-3 z-20 nav-btn !w-9 !h-9">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="md:w-2/3 bg-black flex items-center justify-center relative min-h-[260px] sm:min-h-[420px]">
+                <img id="lb-image" src="" alt="Foto kenangan" class="max-h-[78vh] w-full object-contain">
+                <button type="button" onclick="lightboxStep(-1)" class="nav-btn absolute left-3 top-1/2 -translate-y-1/2" title="Sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
+                <button type="button" onclick="lightboxStep(1)" class="nav-btn absolute right-3 top-1/2 -translate-y-1/2" title="Berikutnya"><i class="fa-solid fa-chevron-right"></i></button>
+                <button type="button" id="lb-fav-btn" onclick="toggleFavoriteFromLightbox()" class="absolute bottom-4 left-4 bg-white/20 backdrop-blur-md text-white p-2.5 rounded-full hover:bg-white hover:text-rose-500 transition-all">
+                    <i class="fa-solid fa-heart text-xl"></i>
+                </button>
+                <span id="lb-counter" class="absolute bottom-4 right-4 text-[11px] text-white/80 bg-black/40 backdrop-blur-md rounded-full px-3 py-1"></span>
+            </div>
+
+            <div class="md:w-1/3 p-6 flex flex-col justify-between bg-gradient-to-b from-white to-rose-50/60 text-slate-800 overflow-y-auto">
+                <div class="space-y-4">
+                    <div>
+                        <span id="lb-category" class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 bg-rose-100 text-rose-700 rounded-full">Kategori</span>
+                        <h3 id="lb-title" class="font-serif text-2xl font-bold text-rose-950 mt-3 leading-snug">Judul Foto</h3>
+                    </div>
+
+                    <div class="space-y-1.5 text-xs text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-calendar text-rose-400 w-4"></i>
+                            <span id="lb-date"></span>
+                        </div>
+                        <div id="lb-location-box" class="flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-rose-400 w-4"></i>
+                            <span id="lb-location"></span>
+                        </div>
+                    </div>
+
+                    <hr class="border-rose-100">
+
+                    <div>
+                        <h4 class="text-xs font-semibold text-rose-900 mb-2">Catatan Kenangan</h4>
+                        <p id="lb-caption" class="font-handwritten text-xl text-slate-700 leading-relaxed bg-white p-4 rounded-2xl border border-rose-100 shadow-sm"></p>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-rose-100 flex items-center justify-between mt-4">
+                    <div class="flex gap-2">
+                        <button type="button" id="lb-edit-btn" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 rounded-full text-xs font-medium hover:bg-rose-100 hover:text-rose-600 transition-all">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                        </button>
+                        <button type="button" id="lb-delete-btn" class="px-3.5 py-2 bg-rose-50 text-rose-600 rounded-full text-xs font-medium hover:bg-rose-600 hover:text-white transition-all">
+                            <i class="fa-solid fa-trash mr-1"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Hapus Foto -->
+    <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="modal-pop bg-white rounded-[28px] max-w-sm w-full p-7 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-heart-crack animate-bounce"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-rose-950 mb-1">Hapus Kenangan Ini?</h3>
+            <p class="text-xs text-slate-500 mb-6">Momen yang sudah dihapus tidak dapat dikembalikan lagi. Yakin ingin menghapusnya?</p>
+            <div class="flex gap-3 justify-center">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Batal</button>
+                <button type="button" id="confirm-delete-btn" onclick="executeDelete()" class="flex-1 py-2.5 rounded-full text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 shadow-md shadow-rose-200 transition-all">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tanggal Jadian -->
+    <div id="counter-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-pop bg-white rounded-[28px] max-w-sm w-full p-7 text-center shadow-2xl">
+            <div class="w-14 h-14 bg-gradient-to-br from-rose-100 to-pink-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-calendar-heart"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-rose-950 mb-1">Atur Tanggal Jadian 💕</h3>
+            <p class="text-xs text-slate-500 mb-4">Pilih tanggal awal kisah cinta kalian dimulai.</p>
+            <input type="date" id="anniversary-date-input" class="field mb-5">
+            <div class="flex gap-2">
+                <button type="button" onclick="closeCounterModal()" class="flex-1 py-2.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">Batal</button>
+                <button type="button" onclick="saveAnniversaryDate()" class="flex-1 py-2.5 rounded-full text-xs font-semibold bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 shadow-md shadow-rose-200 transition-all">Simpan Tanggal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Folder Pertemuan -->
+    <div id="album-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-pop bg-white rounded-[28px] max-w-lg w-full p-6 shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b border-emerald-100">
+                <h3 id="album-modal-title" class="font-serif text-xl font-bold text-emerald-900 flex items-center gap-2">
+                    <i class="fa-brands fa-google-drive text-emerald-500"></i> Hubungkan Folder Pertemuan
+                </h3>
+                <button type="button" onclick="closeAlbumModal()" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="album-form" onsubmit="saveAlbum(event)" class="space-y-4 py-4">
+                <input type="hidden" id="album-id">
+
+                <div>
+                    <label class="lbl">Judul Pertemuan *</label>
+                    <input type="text" id="album-title" required placeholder="Contoh: Pertemuan Ke-1: Pertama Kali Nonton Bioskop" class="field emerald">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="lbl">Tanggal Pertemuan *</label>
+                        <input type="date" id="album-date" required class="field emerald">
+                    </div>
+                    <div>
+                        <label class="lbl">Lokasi</label>
+                        <input type="text" id="album-location" placeholder="Contoh: Mall Grand Indonesia" class="field emerald">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="lbl">Link Folder Google Drive *</label>
+                    <input type="url" id="album-drive-url" required placeholder="https://drive.google.com/drive/folders/..." class="field emerald">
+                    <p class="text-[10px] text-emerald-700 mt-1"><i class="fa-solid fa-info-circle"></i> Pastikan akses folder di Google Drive disetel ke: <b>"Siapa saja yang memiliki link"</b>.</p>
+                </div>
+
+                <div>
+                    <label class="lbl">Link Sampul Foto (Link Google Drive / Direct Link)</label>
+                    <input type="text" id="album-cover-url" oninput="handleAlbumCoverDriveInput(this.value)" placeholder="Tempel link foto Google Drive atau URL gambarnya di sini..." class="field emerald">
+                    <p id="album-cover-hint" class="text-[10px] text-emerald-600 mt-1 hidden"><i class="fa-solid fa-circle-check"></i> Link Google Drive terdeteksi & berhasil dikonversi!</p>
+                </div>
+
+                <div>
+                    <label class="lbl">Catatan Pertemuan Ini</label>
+                    <textarea id="album-description" rows="3" placeholder="Tuliskan momen singkat atau kenangan paling manis di pertemuan ini..." class="field emerald"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAlbumModal()" class="px-4 py-2.5 text-xs font-medium text-slate-500 hover:bg-slate-100 rounded-full transition-all">Batal</button>
+                    <button type="submit" class="px-6 py-2.5 text-xs font-semibold bg-emerald-500 text-white rounded-full hover:bg-emerald-600 shadow-md shadow-emerald-200 transition-all">Simpan Pertemuan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Viewer Folder -->
+    <div id="album-view-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div id="album-view-box" class="modal-pop relative max-w-5xl w-full bg-white rounded-[28px] overflow-hidden shadow-2xl flex flex-col h-[90vh]">
+            <div class="relative px-5 sm:px-6 py-4 bg-gradient-to-r from-emerald-50 via-white to-rose-50 border-b border-emerald-100 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span id="album-view-badge" class="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-white px-2.5 py-0.5 rounded-full">Pertemuan</span>
+                        <span id="album-view-date" class="text-xs text-emerald-700 font-medium"></span>
+                    </div>
+                    <h3 id="album-view-title" class="font-serif text-xl sm:text-2xl font-bold text-emerald-950 leading-tight truncate">Judul Pertemuan</h3>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a id="album-view-direct-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-emerald-600 text-white rounded-full text-xs font-medium hover:bg-emerald-700 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-200">
+                        <i class="fa-brands fa-google-drive"></i> <span class="hidden sm:inline">Buka di Drive</span>
+                    </a>
+                    <button type="button" onclick="toggleAlbumFullscreen()" title="Layar penuh" class="hidden sm:flex text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 w-9 h-9 rounded-full items-center justify-center transition-all">
+                        <i id="album-fs-icon" class="fa-solid fa-expand"></i>
+                    </button>
+                    <button type="button" onclick="closeAlbumViewModal()" class="text-slate-500 hover:text-rose-500 hover:bg-rose-50 w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="album-view-desc-box" class="px-6 py-3 bg-rose-50/50 border-b border-rose-100 text-slate-700 font-handwritten text-xl flex gap-2 items-start">
+                <i class="fa-solid fa-quote-left text-rose-300 text-sm mt-2"></i>
+                <span id="album-view-desc"></span>
+            </div>
+
+            <div class="flex-grow relative bg-gradient-to-b from-rose-50/60 to-emerald-50/40 p-2 sm:p-3 min-h-0">
+                <div id="album-loader" class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-slate-400 text-xs">
+                    <div class="loader-ring"></div>
+                    <span>Memuat foto dari Drive...</span>
+                </div>
+                <iframe id="album-drive-iframe" src="about:blank" class="relative w-full h-full border-0 rounded-2xl bg-white shadow-inner"></iframe>
+            </div>
+
+            <div class="px-5 py-2 text-[11px] text-slate-400 bg-white border-t border-slate-100 flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-amber-400"></i> Klik dua kali sebuah foto untuk membukanya, atau pakai tombol "Buka di Drive" untuk unduh.
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur text-white px-5 py-3 rounded-full shadow-xl text-xs flex items-center gap-3 translate-y-24 opacity-0 transition-all duration-300 z-[70] max-w-[90vw]">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-message">Pesan notifikasi</span>
+    </div>
+
+    <script>
+        // Tempelkan URL Web App Google Apps Script Anda di antara tanda kutip di bawah ini
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6us72YEzPB0E3MNiaMjD__EFY71bClK9LJvJECdxWi8JCE785fGO2e97lt9W_Iahmnw/exec";
+
+        const defaultAlbums = [
+            {
+                id: 'alb_1',
+                title: 'Pertemuan Ke-1: Pertama Kali Bertemu & Nonton Bioskop',
+                date: '2023-08-12',
+                location: 'Central Park Mall, Jakarta',
+                driveUrl: 'https://drive.google.com/drive/folders/1A2B3C4D5E6F7G8H9I0J',
+                driveFolderId: '1A2B3C4D5E6F7G8H9I0J',
+                coverUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop',
+                description: 'Pertama kali bertatap mata dan deg-degan sepanjang nunggu film selesai.'
+            }
+        ];
+
+        const defaultPhotos = [
+            {
+                id: '1',
+                title: 'First Date',
+                url: 'https://drive.google.com/file/d/1d_ZlCWhpO62Nia-_VaMIwiP8Z31DKdyj/view?usp=drive_link',
+                date: '2026-08-19',
+                category: 'Kencan',
+                location: 'Cibinong',
+                caption: 'First Date',
+                isFavorite: true
+            }
+        ];
+
+        let photos = JSON.parse(JSON.stringify(defaultPhotos));
+        let albums = JSON.parse(JSON.stringify(defaultAlbums));
+        let currentMainTab = 'albums';
+        let currentFilter = 'all';
+        let currentSearchQuery = '';
+        let currentView = 'grid';
+        let imgInputMode = 'file';
+        let currentUploadedBase64 = '';
+        let photoToDeleteId = null;
+        let activeLightboxPhotoId = null;
+        let lightboxList = [];
+
+        let anniversaryDate = new Date();
+        anniversaryDate.setFullYear(anniversaryDate.getFullYear() - 1);
+
+        const PLACEHOLDER_PHOTO = 'https://placehold.co/600x400/ffe4e6/9f1239?text=Foto+Kenangan';
+        const PLACEHOLDER_ALBUM = 'https://placehold.co/600x400/e6f4ea/137333?text=Folder+Drive+Pertemuan';
+
+        window.onload = function () {
+            loadFromLocalStorage();
+            renderAlbums();
+            renderGallery();
+            updateStats();
+            startHeartsCanvas();
+            updateLoveCounter();
+            setInterval(updateLoveCounter, 1000);
+            setupBackdropClose();
+            loadFromGoogleSheets();
+        };
+
+        const MODAL_CLOSERS = {
+            'delete-modal': () => closeDeleteModal(),
+            'photo-modal': () => closePhotoModal(),
+            'lightbox-modal': () => closeLightbox(),
+            'album-modal': () => closeAlbumModal(),
+            'counter-modal': () => closeCounterModal(),
+            'album-view-modal': () => closeAlbumViewModal()
+        };
+
+        function setupBackdropClose() {
+            Object.keys(MODAL_CLOSERS).forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener('mousedown', e => { if (e.target === el) MODAL_CLOSERS[id](); });
+            });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            const lb = document.getElementById('lightbox-modal');
+            const lbOpen = lb && !lb.classList.contains('hidden');
+            const deleteOpen = !document.getElementById('delete-modal').classList.contains('hidden');
+
+            if (lbOpen && !deleteOpen) {
+                if (e.key === 'ArrowRight') { lightboxStep(1); return; }
+                if (e.key === 'ArrowLeft') { lightboxStep(-1); return; }
+            }
+            if (e.key !== 'Escape') return;
+            for (const id of Object.keys(MODAL_CLOSERS)) {
+                const el = document.getElementById(id);
+                if (el && !el.classList.contains('hidden')) { MODAL_CLOSERS[id](); break; }
+            }
+        });
+
+        // --- Storage & Sync ---
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('romantic_photos_data', JSON.stringify(photos));
+                localStorage.setItem('romantic_albums_data', JSON.stringify(albums));
+                localStorage.setItem('romantic_anniversary_date', anniversaryDate.toISOString());
+            } catch (err) {
+                console.warn('LocalStorage error:', err);
+                showToast("Penyimpanan browser penuh. Gunakan link foto atau kompres foto.", "error");
+            }
+            updateStats();
+            syncToGoogleSheets();
+        }
+
+        async function syncToGoogleSheets() {
+            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") return;
+
+            updateSyncStatus('syncing');
+            try {
+                const payload = {
+                    action: 'syncAll',
+                    data: { albums, photos, anniversaryDate: anniversaryDate.toISOString() }
+                };
+                await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                updateSyncStatus('success');
+            } catch (err) {
+                console.error('Failed to sync to Google Sheets:', err);
+                updateSyncStatus('error');
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") return;
+
+            updateSyncStatus('syncing');
+            try {
+                const res = await fetch(GOOGLE_APPS_SCRIPT_URL);
+                const result = await res.json();
+                if (result.status === 'success' && result.data) {
+                    if (Array.isArray(result.data.albums) && result.data.albums.length > 0) albums = result.data.albums;
+                    if (Array.isArray(result.data.photos) && result.data.photos.length > 0) photos = result.data.photos;
+                    if (result.data.anniversaryDate) {
+                        const d = new Date(result.data.anniversaryDate);
+                        if (!isNaN(d)) anniversaryDate = d;
+                    }
+
+                    try {
+                        localStorage.setItem('romantic_photos_data', JSON.stringify(photos));
+                        localStorage.setItem('romantic_albums_data', JSON.stringify(albums));
+                        localStorage.setItem('romantic_anniversary_date', anniversaryDate.toISOString());
+                    } catch (e) { console.warn(e); }
+
+                    renderAlbums();
+                    renderGallery();
+                    updateStats();
+                    updateLoveCounter();
+                    updateSyncStatus('success');
+                    showToast("Data berhasil dimuat dari Google Sheets 📊✨");
+                } else {
+                    updateSyncStatus('error');
+                }
+            } catch (err) {
+                console.error('Failed to load from Google Sheets:', err);
+                updateSyncStatus('error');
+            }
+        }
+
+        function updateSyncStatus(status) {
+            const badge = document.getElementById('sync-status-badge');
+            const icon = document.getElementById('sync-status-icon');
+            const text = document.getElementById('sync-status-text');
+
+            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                return;
+            }
+
+            badge.classList.remove('hidden');
+            badge.classList.add('flex');
+
+            if (status === 'syncing') {
+                badge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs";
+                icon.className = "fa-solid fa-arrows-rotate animate-spin text-emerald-600";
+                text.innerText = "Menyimpan...";
+            } else if (status === 'success') {
+                badge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs";
+                icon.className = "fa-solid fa-circle-check text-emerald-600";
+                text.innerText = "Tersinkron";
+            } else {
+                badge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-full text-xs";
+                icon.className = "fa-solid fa-triangle-exclamation text-rose-500";
+                text.innerText = "Gagal Sync";
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const savedPhotos = localStorage.getItem('romantic_photos_data');
+                if (savedPhotos) photos = JSON.parse(savedPhotos);
+
+                const savedAlbums = localStorage.getItem('romantic_albums_data');
+                if (savedAlbums) albums = JSON.parse(savedAlbums);
+
+                const savedDate = localStorage.getItem('romantic_anniversary_date');
+                if (savedDate) {
+                    const d = new Date(savedDate);
+                    if (!isNaN(d)) anniversaryDate = d;
+                }
+            } catch (err) {
+                console.warn('LocalStorage load error:', err);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-albums').innerText = albums.length;
+            document.getElementById('stat-photos').innerText = photos.length;
+            document.getElementById('stat-fav').innerText = photos.filter(p => p.isFavorite).length;
+        }
+
+        // --- Tabs ---
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const btnAlbums = document.getElementById('tab-albums');
+            const btnPhotos = document.getElementById('tab-photos');
+            const viewAlbums = document.getElementById('main-albums-view');
+            const viewPhotos = document.getElementById('main-photos-view');
+
+            btnAlbums.classList.toggle('active', tab === 'albums');
+            btnPhotos.classList.toggle('active', tab !== 'albums');
+
+            if (tab === 'albums') {
+                viewAlbums.classList.remove('hidden');
+                viewPhotos.classList.add('hidden');
+                renderAlbums();
+            } else {
+                viewPhotos.classList.remove('hidden');
+                viewAlbums.classList.add('hidden');
+                renderGallery();
+            }
+        }
+
+        // --- Drive helpers ---
+        function extractDriveFolderId(url) {
+            if (!url) return '';
+            let match = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return match[1];
+            match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return match[1];
+            return url.trim();
+        }
+
+        function parseGoogleDriveUrl(url) {
+            if (!url) return '';
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1] && url.includes('drive.google.com')) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        // Nomor pertemuan berdasarkan urutan tanggal (terlama = 1)
+        function getMeetingNumber(id) {
+            const sorted = [...albums].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const idx = sorted.findIndex(a => a.id === id);
+            return idx === -1 ? 0 : idx + 1;
+        }
+
+        // --- Albums ---
+        function renderAlbums() {
+            const container = document.getElementById('albums-grid');
+            const emptyState = document.getElementById('empty-albums-state');
+            document.getElementById('count-albums').innerText = albums.length;
+
+            if (albums.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            container.innerHTML = albums.map((album, i) => {
+                const cover = escapeHtml(album.coverUrl || PLACEHOLDER_ALBUM);
+                const id = escapeHtml(album.id);
+                const num = getMeetingNumber(album.id);
+
+                return `
+                <div class="reveal album-card glass-card rounded-3xl overflow-hidden group flex flex-col border border-emerald-100 shadow-lg shadow-emerald-100/40" style="animation-delay:${Math.min(i, 8) * 0.08}s">
+                    <div class="relative h-56 bg-emerald-50 overflow-hidden cursor-pointer" onclick="openAlbumViewModal('${id}')">
+                        <img src="${cover}" alt="${escapeHtml(album.title)}" onerror="this.onerror=null;this.src='${PLACEHOLDER_ALBUM}'"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
+
+                        <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-emerald-700 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-heart text-rose-500"></i> Pertemuan #${num}
+                        </span>
+                        <span class="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-md text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm text-sm">
+                            <i class="fa-brands fa-google-drive"></i>
+                        </span>
+
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span class="bg-white/95 text-emerald-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-images"></i> Buka Album
+                            </span>
+                        </div>
+
+                        <div class="absolute bottom-3 left-4 right-4 text-white">
+                            <p class="text-[11px] text-emerald-200 font-medium mb-0.5"><i class="fa-regular fa-calendar mr-1"></i>${formatDate(album.date)}</p>
+                            <h3 class="font-serif font-bold text-xl leading-tight line-clamp-2">${escapeHtml(album.title)}</h3>
+                        </div>
+                    </div>
+
+                    <div class="p-5 flex-grow flex flex-col justify-between bg-white/90">
+                        <div>
+                            ${album.location ? `<p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot text-emerald-500 mr-1.5"></i>${escapeHtml(album.location)}</p>` : ''}
+                            <p class="font-handwritten text-xl text-slate-600 line-clamp-2 leading-snug mb-4">"${escapeHtml(album.description || 'Folder foto kenangan pertemuan ini.')}"</p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-3 border-t border-emerald-50 text-xs">
+                            <button type="button" onclick="openAlbumViewModal('${id}')" class="text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-folder-open"></i> Lihat Foto <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <button type="button" title="Edit" onclick="openEditAlbum('${id}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" title="Hapus" onclick="deleteAlbum('${id}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function openAlbumModal() {
+            document.getElementById('album-form').reset();
+            document.getElementById('album-id').value = '';
+            document.getElementById('album-cover-hint').classList.add('hidden');
+            document.getElementById('album-modal-title').innerHTML = '<i class="fa-brands fa-google-drive text-emerald-500"></i> Hubungkan Folder Pertemuan';
+            document.getElementById('album-modal').classList.remove('hidden');
+        }
+
+        function openEditAlbum(id) {
+            const a = albums.find(x => x.id === id);
+            if (!a) return;
+            document.getElementById('album-id').value = a.id;
+            document.getElementById('album-title').value = a.title || '';
+            document.getElementById('album-date').value = a.date || '';
+            document.getElementById('album-location').value = a.location || '';
+            document.getElementById('album-drive-url').value = a.driveUrl || '';
+            document.getElementById('album-cover-url').value = a.coverUrl || '';
+            document.getElementById('album-description').value = a.description || '';
+            document.getElementById('album-cover-hint').classList.add('hidden');
+            document.getElementById('album-modal-title').innerHTML = '<i class="fa-brands fa-google-drive text-emerald-500"></i> Edit Folder Pertemuan';
+            document.getElementById('album-modal').classList.remove('hidden');
+        }
+
+        function closeAlbumModal() {
+            document.getElementById('album-modal').classList.add('hidden');
+        }
+
+        function handleAlbumCoverDriveInput(val) {
+            const hint = document.getElementById('album-cover-hint');
+            const v = val.trim();
+            if (!v) { hint.classList.add('hidden'); return; }
+            if (parseGoogleDriveUrl(v) !== v) hint.classList.remove('hidden');
+            else hint.classList.add('hidden');
+        }
+
+        function saveAlbum(e) {
+            e.preventDefault();
+            const id = document.getElementById('album-id').value;
+            const title = document.getElementById('album-title').value.trim();
+            const date = document.getElementById('album-date').value;
+            const location = document.getElementById('album-location').value.trim();
+            const driveUrl = document.getElementById('album-drive-url').value.trim();
+            const coverUrl = parseGoogleDriveUrl(document.getElementById('album-cover-url').value.trim());
+            const description = document.getElementById('album-description').value.trim();
+
+            const newAlbum = {
+                id: id || 'alb_' + Date.now(),
+                title, date, location, driveUrl,
+                driveFolderId: extractDriveFolderId(driveUrl),
+                coverUrl, description
+            };
+
+            if (id) {
+                const idx = albums.findIndex(a => a.id === id);
+                if (idx !== -1) albums[idx] = newAlbum; else albums.unshift(newAlbum);
+            } else {
+                albums.unshift(newAlbum);
+            }
+
+            saveToLocalStorage();
+            closeAlbumModal();
+            renderAlbums();
+            showToast(id ? "Folder Pertemuan diperbarui ✨" : "Folder Pertemuan berhasil dihubungkan! 📁✨");
+        }
+
+        function deleteAlbum(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus tautan folder pertemuan ini?")) {
+                albums = albums.filter(a => a.id !== id);
+                saveToLocalStorage();
+                renderAlbums();
+                showToast("Folder Pertemuan dihapus.");
+            }
+        }
+
+        function openAlbumViewModal(id) {
+            const album = albums.find(a => a.id === id);
+            if (!album) return;
+
+            const folderId = extractDriveFolderId(album.driveUrl);
+            document.getElementById('album-view-title').innerText = album.title;
+            document.getElementById('album-view-date').innerText = formatDate(album.date);
+            document.getElementById('album-view-badge').innerText = 'Pertemuan #' + getMeetingNumber(album.id);
+            document.getElementById('album-view-direct-link').href = album.driveUrl || '#';
+
+            const descBox = document.getElementById('album-view-desc-box');
+            if (album.description) {
+                document.getElementById('album-view-desc').innerText = album.description;
+                descBox.classList.remove('hidden');
+                descBox.classList.add('flex');
+            } else {
+                descBox.classList.add('hidden');
+                descBox.classList.remove('flex');
+            }
+
+            const loader = document.getElementById('album-loader');
+            const iframe = document.getElementById('album-drive-iframe');
+            loader.classList.remove('hidden');
+            iframe.onload = function () {
+                if (iframe.src.startsWith('https://drive.google.com')) loader.classList.add('hidden');
+            };
+            iframe.src = `https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#grid`;
+            document.getElementById('album-view-modal').classList.remove('hidden');
+        }
+
+        function closeAlbumViewModal() {
+            const iframe = document.getElementById('album-drive-iframe');
+            iframe.onload = null;
+            iframe.src = 'about:blank';
+            const modal = document.getElementById('album-view-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('full');
+            document.getElementById('album-fs-icon').className = 'fa-solid fa-expand';
+        }
+
+        function toggleAlbumFullscreen() {
+            const modal = document.getElementById('album-view-modal');
+            const isFull = modal.classList.toggle('full');
+            document.getElementById('album-fs-icon').className = isFull ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+        }
+
+        // --- Photos rendering ---
+        function getFilteredPhotos() {
+            const q = currentSearchQuery.toLowerCase();
+            return photos.filter(item => {
+                const matchesFilter = (currentFilter === 'all') ? true :
+                                      (currentFilter === 'favorite') ? !!item.isFavorite :
+                                      item.category === currentFilter;
+
+                const matchesSearch = (item.title || '').toLowerCase().includes(q) ||
+                                      (item.caption || '').toLowerCase().includes(q) ||
+                                      (item.location || '').toLowerCase().includes(q);
+
+                return matchesFilter && matchesSearch;
+            });
+        }
+
+        function renderGallery() {
+            const list = getFilteredPhotos();
+            const gridContainer = document.getElementById('gallery-grid');
+            const timelineContainer = document.getElementById('gallery-timeline');
+            const emptyState = document.getElementById('empty-state');
+
+            document.getElementById('count-all').innerText = photos.length;
+
+            if (list.length === 0) {
+                gridContainer.classList.add('hidden');
+                timelineContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            if (currentView === 'grid') {
+                gridContainer.classList.remove('hidden');
+                timelineContainer.classList.add('hidden');
+                renderGrid(list, gridContainer);
+            } else {
+                gridContainer.classList.add('hidden');
+                timelineContainer.classList.remove('hidden');
+                renderTimeline(list, timelineContainer);
+            }
+        }
+
+        function renderGrid(items, container) {
+            container.innerHTML = items.map((photo, index) => {
+                const rotAngle = (index % 3 === 0) ? '-rotate-1' : (index % 3 === 1) ? 'rotate-1' : 'rotate-0';
+                const id = escapeHtml(photo.id);
+                return `
+                <div class="reveal polaroid ${rotAngle} group cursor-pointer" style="animation-delay:${Math.min(index, 10) * 0.06}s" onclick="openLightbox('${id}')">
+                    <div class="relative w-full h-60 rounded overflow-hidden bg-rose-50 mb-3">
+                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" loading="lazy"
+                            onerror="this.onerror=null;this.src='${PLACEHOLDER_PHOTO}'"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+
+                        <span class="absolute top-2 left-2 bg-white/85 backdrop-blur-md text-rose-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                            ${escapeHtml(photo.category || 'Momen')}
+                        </span>
+
+                        <button type="button" onclick="event.stopPropagation(); toggleFavorite('${id}')"
+                            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 ${photo.isFavorite ? 'text-rose-500' : 'text-slate-400 hover:text-rose-400'}">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+
+                        <div class="actions absolute bottom-2 right-2 flex gap-1.5">
+                            <button type="button" title="Edit" onclick="event.stopPropagation(); openEditModal('${id}')" class="w-8 h-8 rounded-full bg-white/95 text-slate-700 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md transition-all">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button type="button" title="Hapus" onclick="event.stopPropagation(); openDeleteModal('${id}')" class="w-8 h-8 rounded-full bg-white/95 text-rose-600 hover:bg-rose-600 hover:text-white flex items-center justify-center shadow-md transition-all">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-1">
+                        <h3 class="font-serif font-bold text-slate-800 text-lg line-clamp-1 group-hover:text-rose-600 transition-colors">${escapeHtml(photo.title)}</h3>
+                        <p class="font-handwritten text-xl text-slate-600 line-clamp-2 leading-snug mt-0.5 mb-3">"${escapeHtml(photo.caption || 'Tanpa catatan khusus.')}"</p>
+                        <div class="flex items-center justify-between gap-2 text-[11px] text-slate-400 pt-2 border-t border-dashed border-rose-100">
+                            <span class="whitespace-nowrap"><i class="fa-regular fa-calendar mr-1"></i>${formatDate(photo.date)}</span>
+                            ${photo.location ? `<span class="line-clamp-1"><i class="fa-solid fa-location-dot mr-1 text-rose-300"></i>${escapeHtml(photo.location)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function renderTimeline(items, container) {
+            const sorted = [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = sorted.map((photo, i) => `
+                <div class="reveal relative pl-8 sm:pl-10 group" style="animation-delay:${Math.min(i, 10) * 0.06}s">
+                    <div class="absolute -left-[17px] top-4 w-8 h-8 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-white flex items-center justify-center border-4 border-blush shadow-md text-xs">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 items-center hover:border-rose-300 hover:shadow-xl hover:shadow-rose-100/60 transition-all cursor-pointer" onclick="openLightbox('${escapeHtml(photo.id)}')">
+                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_PHOTO}'"
+                            class="w-full md:w-56 h-40 object-cover rounded-2xl shadow-md">
+                        <div class="flex-grow space-y-1.5 w-full">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[10px] font-bold uppercase text-rose-600 bg-rose-100 px-2.5 py-0.5 rounded-full">${escapeHtml(photo.category || 'Momen')}</span>
+                                <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${formatDate(photo.date)}</span>
+                                ${photo.isFavorite ? '<i class="fa-solid fa-heart text-rose-500 text-xs"></i>' : ''}
+                            </div>
+                            <h3 class="font-serif font-bold text-xl text-slate-900">${escapeHtml(photo.title)}</h3>
+                            <p class="font-handwritten text-slate-600 text-xl leading-snug">"${escapeHtml(photo.caption || 'Tanpa catatan khusus.')}"</p>
+                            ${photo.location ? `<p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot mr-1 text-rose-400"></i>${escapeHtml(photo.location)}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Filter / Search / View ---
+        function setFilter(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+            });
+            renderGallery();
+        }
+
+        function handleSearch() {
+            currentSearchQuery = document.getElementById('search-input').value;
+            renderGallery();
+        }
+
+        function switchView(mode) {
+            currentView = mode;
+            document.getElementById('btn-grid-view').classList.toggle('active', mode === 'grid');
+            document.getElementById('btn-timeline-view').classList.toggle('active', mode !== 'grid');
+            renderGallery();
+        }
+
+        // --- Favorite ---
+        function toggleFavorite(id) {
+            const photo = photos.find(p => p.id === id);
+            if (photo) {
+                photo.isFavorite = !photo.isFavorite;
+                saveToLocalStorage();
+                showToast(photo.isFavorite ? "Disimpan ke Favorit ❤️" : "Dihapus dari Favorit");
+                renderGallery();
+            }
+        }
+
+        function toggleFavoriteFromLightbox() {
+            if (!activeLightboxPhotoId) return;
+            toggleFavorite(activeLightboxPhotoId);
+            const photo = photos.find(p => p.id === activeLightboxPhotoId);
+            if (photo) updateLightboxFavButton(photo.isFavorite);
+        }
+
+        function updateLightboxFavButton(isFav) {
+            const btn = document.getElementById('lb-fav-btn');
+            if (isFav) {
+                btn.className = "absolute bottom-4 left-4 bg-rose-500 text-white p-2.5 rounded-full hover:bg-rose-600 transition-all shadow-lg scale-110";
+            } else {
+                btn.className = "absolute bottom-4 left-4 bg-white/20 backdrop-blur-md text-white p-2.5 rounded-full hover:bg-white hover:text-rose-500 transition-all";
+            }
+        }
+
+        // --- Photo modal ---
+        function openPhotoModal() {
+            document.getElementById('photo-form').reset();
+            document.getElementById('photo-id').value = '';
+            document.getElementById('modal-title').innerText = "Tambah Kenangan Baru";
+            removePreview();
+            setImgInputMode('file');
+            document.getElementById('photo-modal').classList.remove('hidden');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photo-modal').classList.add('hidden');
+        }
+
+        function openEditModal(id) {
+            const photo = photos.find(p => p.id === id);
+            if (!photo) return;
+
+            document.getElementById('photo-form').reset();
+            removePreview();
+            document.getElementById('photo-id').value = photo.id;
+            document.getElementById('photo-title').value = photo.title || '';
+            document.getElementById('photo-date').value = photo.date || '';
+            document.getElementById('photo-category').value = photo.category || 'Kencan';
+            document.getElementById('photo-location').value = photo.location || '';
+            document.getElementById('photo-caption').value = photo.caption || '';
+            document.getElementById('modal-title').innerText = "Edit Kenangan";
+
+            setImgInputMode('url');
+            currentUploadedBase64 = photo.url;
+            if (photo.url && !photo.url.startsWith('data:')) {
+                document.getElementById('photo-url').value = photo.url;
+            }
+            showPreview(photo.url);
+
+            document.getElementById('photo-modal').classList.remove('hidden');
+        }
+
+        function setImgInputMode(mode) {
+            imgInputMode = mode;
+            const map = { file: 'btn-src-file', gdrive: 'btn-src-gdrive', url: 'btn-src-url' };
+            const containers = { file: 'input-container-file', gdrive: 'input-container-gdrive', url: 'input-container-url' };
+
+            Object.keys(map).forEach(k => {
+                document.getElementById(map[k]).classList.toggle('active', k === mode);
+                document.getElementById(containers[k]).classList.toggle('hidden', k !== mode);
+            });
+        }
+
+        function handleGoogleDriveInput(val) {
+            if (!val.trim()) { removePreview(true); return; }
+            const converted = parseGoogleDriveUrl(val.trim());
+            if (converted) {
+                currentUploadedBase64 = converted;
+                showPreview(converted);
+            }
+        }
+
+        // Kompres gambar agar muat di localStorage
+        function compressImage(file, maxSize, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = reject;
+                reader.onload = function (evt) {
+                    const img = new Image();
+                    img.onerror = reject;
+                    img.onload = function () {
+                        let w = img.width, h = img.height;
+                        const scale = Math.min(1, maxSize / Math.max(w, h));
+                        w = Math.round(w * scale);
+                        h = Math.round(h * scale);
+                        const c = document.createElement('canvas');
+                        c.width = w; c.height = h;
+                        c.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(c.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function previewImageFile(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast("File harus berupa gambar!", "error");
+                e.target.value = '';
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("Ukuran foto maksimal 5MB!", "error");
+                e.target.value = '';
+                return;
+            }
+
+            try {
+                currentUploadedBase64 = await compressImage(file, 1280, 0.8);
+                showPreview(currentUploadedBase64);
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal membaca foto. Coba file lain.", "error");
+            }
+        }
+
+        function previewImageUrl(url) {
+            const v = (url || '').trim();
+            if (/^https?:\/\//i.test(v)) {
+                const converted = parseGoogleDriveUrl(v);
+                currentUploadedBase64 = converted;
+                showPreview(converted);
+            }
+        }
+
+        function showPreview(src) {
+            document.getElementById('img-preview').src = src;
+            document.getElementById('preview-box').classList.remove('hidden');
+        }
+
+        function removePreview(keepInputs) {
+            currentUploadedBase64 = '';
+            document.getElementById('preview-box').classList.add('hidden');
+            document.getElementById('img-preview').src = '';
+            document.getElementById('photo-file').value = '';
+            if (keepInputs !== true) {
+                document.getElementById('photo-gdrive-url').value = '';
+                document.getElementById('photo-url').value = '';
+            }
+        }
+
+        function savePhoto(e) {
+            e.preventDefault();
+            const id = document.getElementById('photo-id').value;
+            const title = document.getElementById('photo-title').value.trim();
+            const date = document.getElementById('photo-date').value;
+            const category = document.getElementById('photo-category').value;
+            const location = document.getElementById('photo-location').value.trim();
+            const caption = document.getElementById('photo-caption').value.trim();
+
+            if (!currentUploadedBase64) {
+                showToast("Pilih foto atau masukkan link terlebih dahulu!", "error");
+                return;
+            }
+
+            if (id) {
+                const index = photos.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    photos[index] = { ...photos[index], title, url: currentUploadedBase64, date, category, location, caption };
+                    showToast("Kenangan berhasil diperbarui ✨");
+                }
+            } else {
+                photos.unshift({
+                    id: Date.now().toString(),
+                    title, url: currentUploadedBase64, date, category, location, caption,
+                    isFavorite: false
+                });
+                showToast("Kenangan manis baru berhasil disimpan 💕");
+            }
+
+            saveToLocalStorage();
+            closePhotoModal();
+            renderGallery();
+        }
+
+        // --- Delete ---
+        function openDeleteModal(id) {
+            photoToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            photoToDeleteId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function executeDelete() {
+            if (photoToDeleteId) {
+                photos = photos.filter(p => p.id !== photoToDeleteId);
+                saveToLocalStorage();
+                showToast("Kenangan telah dihapus.");
+                closeDeleteModal();
+                closeLightbox();
+                renderGallery();
+            }
+        }
+
+        // --- Lightbox ---
+        function openLightbox(id) {
+            lightboxList = getFilteredPhotos();
+            showLightboxPhoto(id);
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+        }
+
+        function showLightboxPhoto(id) {
+            const photo = photos.find(p => p.id === id);
+            if (!photo) return;
+
+            activeLightboxPhotoId = id;
+            const img = document.getElementById('lb-image');
+            img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_PHOTO; };
+            img.src = photo.url;
+            document.getElementById('lb-title').innerText = photo.title;
+            document.getElementById('lb-category').innerText = photo.category || 'Momen';
+            document.getElementById('lb-date').innerText = formatDate(photo.date);
+            document.getElementById('lb-caption').innerText = `"${photo.caption || 'Tanpa catatan.'}"`;
+
+            const pos = lightboxList.findIndex(p => p.id === id);
+            document.getElementById('lb-counter').innerText = pos === -1 ? '' : `${pos + 1} / ${lightboxList.length}`;
+
+            const locBox = document.getElementById('lb-location-box');
+            if (photo.location) {
+                document.getElementById('lb-location').innerText = photo.location;
+                locBox.classList.remove('hidden');
+            } else {
+                locBox.classList.add('hidden');
+            }
+
+            updateLightboxFavButton(photo.isFavorite);
+
+            document.getElementById('lb-edit-btn').onclick = () => { closeLightbox(); openEditModal(photo.id); };
+            document.getElementById('lb-delete-btn').onclick = () => { openDeleteModal(photo.id); };
+        }
+
+        function lightboxStep(dir) {
+            if (!lightboxList.length || !activeLightboxPhotoId) return;
+            let pos = lightboxList.findIndex(p => p.id === activeLightboxPhotoId);
+            if (pos === -1) pos = 0;
+            const next = (pos + dir + lightboxList.length) % lightboxList.length;
+            showLightboxPhoto(lightboxList[next].id);
+        }
+
+        function closeLightbox() {
+            activeLightboxPhotoId = null;
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        // --- Love counter ---
+        function updateLoveCounter() {
+            const diff = new Date() - anniversaryDate;
+            const note = document.getElementById('cd-note');
+
+            if (diff < 0) {
+                ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => document.getElementById(id).innerText = '0');
+                note.innerText = 'Hari istimewa segera tiba! · Ubah tanggal';
+                return;
+            }
+
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            document.getElementById('cd-days').innerText = days.toLocaleString('id-ID');
+            document.getElementById('cd-hours').innerText = hours;
+            document.getElementById('cd-mins').innerText = minutes;
+            document.getElementById('cd-secs').innerText = seconds;
+            note.innerText = 'Sejak ' + formatDate(anniversaryDate.toISOString().slice(0, 10)) + ' · Ubah tanggal';
+        }
+
+        function openCounterSettings() {
+            const d = anniversaryDate;
+            const pad = n => String(n).padStart(2, '0');
+            document.getElementById('anniversary-date-input').value =
+                `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            document.getElementById('counter-modal').classList.remove('hidden');
+        }
+
+        function closeCounterModal() {
+            document.getElementById('counter-modal').classList.add('hidden');
+        }
+
+        function saveAnniversaryDate() {
+            const v = document.getElementById('anniversary-date-input').value;
+            if (v) {
+                const [y, m, d] = v.split('-').map(Number);
+                anniversaryDate = new Date(y, m - 1, d); // waktu lokal
+                saveToLocalStorage();
+                updateLoveCounter();
+                showToast("Tanggal jadian berhasil diperbarui!");
+                closeCounterModal();
+            }
+        }
+
+        // --- Hearts canvas ---
+        function startHeartsCanvas() {
+            const canvas = document.getElementById('hearts-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const colors = ['#fda4af', '#fb7185', '#f9a8d4', '#fecdd3'];
+            const hearts = [];
+            for (let i = 0; i < 22; i++) {
+                hearts.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 12 + 7,
+                    speedY: Math.random() * 0.6 + 0.2,
+                    sway: Math.random() * Math.PI * 2,
+                    swaySpeed: Math.random() * 0.02 + 0.005,
+                    rot: (Math.random() - 0.5) * 0.6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    opacity: Math.random() * 0.35 + 0.15
+                });
+            }
+
+            function drawHeart(h) {
+                ctx.save();
+                ctx.translate(h.x, h.y);
+                ctx.rotate(h.rot);
+                ctx.globalAlpha = h.opacity;
+                ctx.fillStyle = h.color;
+                const s = h.size;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-s / 2, -s / 2, -s, s / 3, 0, s);
+                ctx.bezierCurveTo(s, s / 3, s / 2, -s / 2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                hearts.forEach(h => {
+                    h.y -= h.speedY;
+                    h.sway += h.swaySpeed;
+                    h.x += Math.sin(h.sway) * 0.5;
+                    if (h.y < -30) { h.y = height + 30; h.x = Math.random() * width; }
+                    drawHeart(h);
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // --- Helpers ---
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+            const d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(dateStr);
+            if (isNaN(d)) return '';
+            return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function escapeHtml(text) {
+            return String(text == null ? '' : text).replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        let toastTimer = null;
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            const icon = document.getElementById('toast-icon');
+            icon.className = type === 'error'
+                ? "fa-solid fa-circle-exclamation text-rose-400 text-base"
+                : "fa-solid fa-circle-check text-emerald-400 text-base";
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
