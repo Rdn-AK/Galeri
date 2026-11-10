@@ -146,7 +146,9 @@
         .nav-btn { width: 42px; height: 42px; border-radius: 9999px; background: rgba(255,255,255,.18); color: #fff; backdrop-filter: blur(8px); transition: all .2s; display: flex; align-items: center; justify-content: center; }
         .nav-btn:hover { background: #fff; color: #e11d48; }
 
-        @media (prefers-reduced-motion: reduce) { .reveal, .blob, .heartbeat { animation: none; opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .reveal, .blob, .heartbeat { animation: none; opacity: 1; } #hearts-canvas { display: none; } }
+        /* Setelah render pertama, jangan putar ulang animasi masuk setiap kali grid di-render ulang */
+        .no-anim .reveal { animation: none; opacity: 1; }
     </style>
 </head>
 <body class="text-slate-800 font-sans min-h-screen relative overflow-x-hidden">
@@ -302,7 +304,7 @@
         <div class="modal-pop bg-white rounded-[28px] max-w-lg w-full p-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center pb-3 border-b border-rose-100">
                 <h3 id="modal-title" class="font-serif text-xl font-bold text-rose-900">Tambah Kenangan Baru</h3>
-                <button type="button" onclick="closePhotoModal()" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                <button type="button" onclick="closePhotoModal()" aria-label="Tutup" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -396,15 +398,15 @@
     <!-- MODAL: Lightbox -->
     <div id="lightbox-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-6">
         <div class="modal-pop relative max-w-5xl w-full bg-slate-900 rounded-[28px] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[92vh]">
-            <button type="button" onclick="closeLightbox()" class="absolute top-3 right-3 z-20 nav-btn !w-9 !h-9">
+            <button type="button" onclick="closeLightbox()" aria-label="Tutup" class="absolute top-3 right-3 z-20 nav-btn !w-9 !h-9">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
             <div class="md:w-2/3 bg-black flex items-center justify-center relative min-h-[260px] sm:min-h-[420px]">
                 <img id="lb-image" src="" alt="Foto kenangan" class="max-h-[78vh] w-full object-contain">
-                <button type="button" onclick="lightboxStep(-1)" class="nav-btn absolute left-3 top-1/2 -translate-y-1/2" title="Sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
-                <button type="button" onclick="lightboxStep(1)" class="nav-btn absolute right-3 top-1/2 -translate-y-1/2" title="Berikutnya"><i class="fa-solid fa-chevron-right"></i></button>
-                <button type="button" id="lb-fav-btn" onclick="toggleFavoriteFromLightbox()" class="absolute bottom-4 left-4 bg-white/20 backdrop-blur-md text-white p-2.5 rounded-full hover:bg-white hover:text-rose-500 transition-all">
+                <button type="button" onclick="lightboxStep(-1)" class="nav-btn absolute left-3 top-1/2 -translate-y-1/2" title="Sebelumnya" aria-label="Sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
+                <button type="button" onclick="lightboxStep(1)" class="nav-btn absolute right-3 top-1/2 -translate-y-1/2" title="Berikutnya" aria-label="Berikutnya"><i class="fa-solid fa-chevron-right"></i></button>
+                <button type="button" id="lb-fav-btn" onclick="toggleFavoriteFromLightbox()" aria-label="Favorit" class="absolute bottom-4 left-4 bg-white/20 backdrop-blur-md text-white p-2.5 rounded-full hover:bg-white hover:text-rose-500 transition-all">
                     <i class="fa-solid fa-heart text-xl"></i>
                 </button>
                 <span id="lb-counter" class="absolute bottom-4 right-4 text-[11px] text-white/80 bg-black/40 backdrop-blur-md rounded-full px-3 py-1"></span>
@@ -469,7 +471,7 @@
     <div id="counter-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="modal-pop bg-white rounded-[28px] max-w-sm w-full p-7 text-center shadow-2xl">
             <div class="w-14 h-14 bg-gradient-to-br from-rose-100 to-pink-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-                <i class="fa-solid fa-calendar-heart"></i>
+                <i class="fa-solid fa-calendar-days"></i>
             </div>
             <h3 class="font-serif text-xl font-bold text-rose-950 mb-1">Atur Tanggal Jadian 💕</h3>
             <p class="text-xs text-slate-500 mb-4">Pilih tanggal awal kisah cinta kalian dimulai.</p>
@@ -488,7 +490,7 @@
                 <h3 id="album-modal-title" class="font-serif text-xl font-bold text-emerald-900 flex items-center gap-2">
                     <i class="fa-brands fa-google-drive text-emerald-500"></i> Hubungkan Folder Pertemuan
                 </h3>
-                <button type="button" onclick="closeAlbumModal()" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                <button type="button" onclick="closeAlbumModal()" aria-label="Tutup" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 text-lg w-9 h-9 rounded-full flex items-center justify-center transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -555,7 +557,7 @@
                     <button type="button" onclick="toggleAlbumFullscreen()" title="Layar penuh" class="hidden sm:flex text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 w-9 h-9 rounded-full items-center justify-center transition-all">
                         <i id="album-fs-icon" class="fa-solid fa-expand"></i>
                     </button>
-                    <button type="button" onclick="closeAlbumViewModal()" class="text-slate-500 hover:text-rose-500 hover:bg-rose-50 w-9 h-9 rounded-full flex items-center justify-center transition-all">
+                    <button type="button" onclick="closeAlbumViewModal()" aria-label="Tutup" class="text-slate-500 hover:text-rose-500 hover:bg-rose-50 w-9 h-9 rounded-full flex items-center justify-center transition-all">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
@@ -634,7 +636,7 @@
         const PLACEHOLDER_PHOTO = 'https://placehold.co/600x400/ffe4e6/9f1239?text=Foto+Kenangan';
         const PLACEHOLDER_ALBUM = 'https://placehold.co/600x400/e6f4ea/137333?text=Folder+Drive+Pertemuan';
 
-        window.onload = function () {
+        function init() {
             loadFromLocalStorage();
             renderAlbums();
             renderGallery();
@@ -643,8 +645,13 @@
             updateLoveCounter();
             setInterval(updateLoveCounter, 1000);
             setupBackdropClose();
-            loadFromGoogleSheets();
-        };
+            if (localStorage.getItem(PENDING_SYNC_KEY) === '1') {
+                // Perubahan sebelumnya belum sempat tersinkron: kirim data lokal, jangan ditimpa data server yang lebih lama
+                syncToGoogleSheets();
+            } else {
+                loadFromGoogleSheets();
+            }
+        }
 
         const MODAL_CLOSERS = {
             'delete-modal': () => closeDeleteModal(),
@@ -679,21 +686,49 @@
         });
 
         // --- Storage & Sync ---
+        const PENDING_SYNC_KEY = 'romantic_pending_sync';
+        const SYNC_DEBOUNCE_MS = 800;
+        let localVersion = 0;       // naik setiap ada perubahan lokal
+        let syncTimer = null;
+        let syncInFlight = false;
+
+        function writeLocalStorage() {
+            localStorage.setItem('romantic_photos_data', JSON.stringify(photos));
+            localStorage.setItem('romantic_albums_data', JSON.stringify(albums));
+            localStorage.setItem('romantic_anniversary_date', anniversaryDate.toISOString());
+        }
+
         function saveToLocalStorage() {
+            localVersion++;
             try {
-                localStorage.setItem('romantic_photos_data', JSON.stringify(photos));
-                localStorage.setItem('romantic_albums_data', JSON.stringify(albums));
-                localStorage.setItem('romantic_anniversary_date', anniversaryDate.toISOString());
+                writeLocalStorage();
+                localStorage.setItem(PENDING_SYNC_KEY, '1');
             } catch (err) {
                 console.warn('LocalStorage error:', err);
                 showToast("Penyimpanan browser penuh. Gunakan link foto atau kompres foto.", "error");
             }
             updateStats();
-            syncToGoogleSheets();
+            scheduleSync();
+        }
+
+        function hasSyncUrl() {
+            return !!(GOOGLE_APPS_SCRIPT_URL && GOOGLE_APPS_SCRIPT_URL.trim());
+        }
+
+        // Gabungkan perubahan beruntun (mis. klik favorit berkali-kali) menjadi satu kali kirim
+        function scheduleSync() {
+            if (!hasSyncUrl()) return;
+            updateSyncStatus('syncing');
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(syncToGoogleSheets, SYNC_DEBOUNCE_MS);
         }
 
         async function syncToGoogleSheets() {
-            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") return;
+            if (!hasSyncUrl()) return;
+            // Hanya satu request berjalan sekaligus agar data lama tidak menimpa data baru
+            if (syncInFlight) return; // dikirim ulang di blok finally bila ada perubahan baru
+            syncInFlight = true;
+            const versionAtSend = localVersion;
 
             updateSyncStatus('syncing');
             try {
@@ -701,25 +736,43 @@
                     action: 'syncAll',
                     data: { albums, photos, anniversaryDate: anniversaryDate.toISOString() }
                 };
-                await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                const res = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                let result = null;
+                try { result = await res.json(); } catch (e) { /* respons bukan JSON */ }
+                if (result && result.status && result.status !== 'success') {
+                    throw new Error(result.message || 'Apps Script mengembalikan error');
+                }
+                if (versionAtSend === localVersion) {
+                    try { localStorage.removeItem(PENDING_SYNC_KEY); } catch (e) {}
+                }
                 updateSyncStatus('success');
             } catch (err) {
                 console.error('Failed to sync to Google Sheets:', err);
                 updateSyncStatus('error');
+            } finally {
+                syncInFlight = false;
+                if (versionAtSend !== localVersion) scheduleSync();
             }
         }
 
         async function loadFromGoogleSheets() {
-            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") return;
+            if (!hasSyncUrl()) return;
+            const versionAtStart = localVersion;
 
             updateSyncStatus('syncing');
             try {
                 const res = await fetch(GOOGLE_APPS_SCRIPT_URL);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
                 const result = await res.json();
+
+                // Pengguna sudah mengubah sesuatu selagi menunggu respons: jangan timpa perubahannya
+                if (versionAtStart !== localVersion) return;
+
                 if (result.status === 'success' && result.data) {
                     if (Array.isArray(result.data.albums) && result.data.albums.length > 0) albums = result.data.albums;
                     if (Array.isArray(result.data.photos) && result.data.photos.length > 0) photos = result.data.photos;
@@ -728,11 +781,7 @@
                         if (!isNaN(d)) anniversaryDate = d;
                     }
 
-                    try {
-                        localStorage.setItem('romantic_photos_data', JSON.stringify(photos));
-                        localStorage.setItem('romantic_albums_data', JSON.stringify(albums));
-                        localStorage.setItem('romantic_anniversary_date', anniversaryDate.toISOString());
-                    } catch (e) { console.warn(e); }
+                    try { writeLocalStorage(); } catch (e) { console.warn(e); }
 
                     renderAlbums();
                     renderGallery();
@@ -754,7 +803,7 @@
             const icon = document.getElementById('sync-status-icon');
             const text = document.getElementById('sync-status-text');
 
-            if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") {
+            if (!hasSyncUrl()) {
                 badge.classList.add('hidden');
                 badge.classList.remove('flex');
                 return;
@@ -843,11 +892,28 @@
             return url;
         }
 
-        // Nomor pertemuan berdasarkan urutan tanggal (terlama = 1)
-        function getMeetingNumber(id) {
+        // Hanya izinkan skema aman untuk gambar (cegah javascript: dsb. dari data sinkron)
+        function safeImageUrl(url, fallback) {
+            const v = parseGoogleDriveUrl(String(url || '').trim());
+            if (/^(https?:\/\/|data:image\/|blob:)/i.test(v)) return v;
+            return fallback;
+        }
+
+        function safeLinkUrl(url) {
+            const v = String(url || '').trim();
+            return /^https?:\/\//i.test(v) ? v : '#';
+        }
+
+        // Nomor pertemuan berdasarkan urutan tanggal (terlama = 1); dihitung sekali per render
+        function getMeetingNumbers() {
             const sorted = [...albums].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const idx = sorted.findIndex(a => a.id === id);
-            return idx === -1 ? 0 : idx + 1;
+            const map = new Map();
+            sorted.forEach((a, i) => map.set(a.id, i + 1));
+            return map;
+        }
+
+        function getMeetingNumber(id) {
+            return getMeetingNumbers().get(id) || 0;
         }
 
         // --- Albums ---
@@ -863,14 +929,15 @@
             }
             emptyState.classList.add('hidden');
 
+            const numbers = getMeetingNumbers();
             container.innerHTML = albums.map((album, i) => {
-                const cover = escapeHtml(album.coverUrl || PLACEHOLDER_ALBUM);
+                const cover = escapeHtml(safeImageUrl(album.coverUrl, PLACEHOLDER_ALBUM));
                 const id = escapeHtml(album.id);
-                const num = getMeetingNumber(album.id);
+                const num = numbers.get(album.id) || 0;
 
                 return `
                 <div class="reveal album-card glass-card rounded-3xl overflow-hidden group flex flex-col border border-emerald-100 shadow-lg shadow-emerald-100/40" style="animation-delay:${Math.min(i, 8) * 0.08}s">
-                    <div class="relative h-56 bg-emerald-50 overflow-hidden cursor-pointer" onclick="openAlbumViewModal('${id}')">
+                    <div class="relative h-56 bg-emerald-50 overflow-hidden cursor-pointer" data-id="${id}" onclick="openAlbumViewModal(this.dataset.id)">
                         <img src="${cover}" alt="${escapeHtml(album.title)}" onerror="this.onerror=null;this.src='${PLACEHOLDER_ALBUM}'"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
@@ -901,12 +968,12 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-3 border-t border-emerald-50 text-xs">
-                            <button type="button" onclick="openAlbumViewModal('${id}')" class="text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-1.5">
+                            <button type="button" data-id="${id}" onclick="openAlbumViewModal(this.dataset.id)" class="text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-1.5">
                                 <i class="fa-solid fa-folder-open"></i> Lihat Foto <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                             </button>
                             <div class="flex items-center gap-1">
-                                <button type="button" title="Edit" onclick="openEditAlbum('${id}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" title="Hapus" onclick="deleteAlbum('${id}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"><i class="fa-solid fa-trash"></i></button>
+                                <button type="button" title="Edit" data-id="${id}" onclick="openEditAlbum(this.dataset.id)" class="w-8 h-8 rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" title="Hapus" data-id="${id}" onclick="deleteAlbum(this.dataset.id)" class="w-8 h-8 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -997,7 +1064,7 @@
             document.getElementById('album-view-title').innerText = album.title;
             document.getElementById('album-view-date').innerText = formatDate(album.date);
             document.getElementById('album-view-badge').innerText = 'Pertemuan #' + getMeetingNumber(album.id);
-            document.getElementById('album-view-direct-link').href = album.driveUrl || '#';
+            document.getElementById('album-view-direct-link').href = safeLinkUrl(album.driveUrl);
 
             const descBox = document.getElementById('album-view-desc-box');
             if (album.description) {
@@ -1084,9 +1151,9 @@
                 const rotAngle = (index % 3 === 0) ? '-rotate-1' : (index % 3 === 1) ? 'rotate-1' : 'rotate-0';
                 const id = escapeHtml(photo.id);
                 return `
-                <div class="reveal polaroid ${rotAngle} group cursor-pointer" style="animation-delay:${Math.min(index, 10) * 0.06}s" onclick="openLightbox('${id}')">
+                <div class="reveal polaroid ${rotAngle} group cursor-pointer" style="animation-delay:${Math.min(index, 10) * 0.06}s" data-id="${id}" onclick="openLightbox(this.dataset.id)">
                     <div class="relative w-full h-60 rounded overflow-hidden bg-rose-50 mb-3">
-                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" loading="lazy"
+                        <img src="${escapeHtml(safeImageUrl(photo.url, PLACEHOLDER_PHOTO))}" alt="${escapeHtml(photo.title)}" loading="lazy" decoding="async"
                             onerror="this.onerror=null;this.src='${PLACEHOLDER_PHOTO}'"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
 
@@ -1094,16 +1161,16 @@
                             ${escapeHtml(photo.category || 'Momen')}
                         </span>
 
-                        <button type="button" onclick="event.stopPropagation(); toggleFavorite('${id}')"
+                        <button type="button" data-id="${id}" aria-label="Favorit" onclick="event.stopPropagation(); toggleFavorite(this.dataset.id)"
                             class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 ${photo.isFavorite ? 'text-rose-500' : 'text-slate-400 hover:text-rose-400'}">
                             <i class="fa-solid fa-heart"></i>
                         </button>
 
                         <div class="actions absolute bottom-2 right-2 flex gap-1.5">
-                            <button type="button" title="Edit" onclick="event.stopPropagation(); openEditModal('${id}')" class="w-8 h-8 rounded-full bg-white/95 text-slate-700 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md transition-all">
+                            <button type="button" title="Edit" data-id="${id}" onclick="event.stopPropagation(); openEditModal(this.dataset.id)" class="w-8 h-8 rounded-full bg-white/95 text-slate-700 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md transition-all">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button type="button" title="Hapus" onclick="event.stopPropagation(); openDeleteModal('${id}')" class="w-8 h-8 rounded-full bg-white/95 text-rose-600 hover:bg-rose-600 hover:text-white flex items-center justify-center shadow-md transition-all">
+                            <button type="button" title="Hapus" data-id="${id}" onclick="event.stopPropagation(); openDeleteModal(this.dataset.id)" class="w-8 h-8 rounded-full bg-white/95 text-rose-600 hover:bg-rose-600 hover:text-white flex items-center justify-center shadow-md transition-all">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
@@ -1120,6 +1187,7 @@
                 </div>
                 `;
             }).join('');
+            markRendered(container);
         }
 
         function renderTimeline(items, container) {
@@ -1131,8 +1199,8 @@
                         <i class="fa-solid fa-heart"></i>
                     </div>
 
-                    <div class="glass-card rounded-3xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 items-center hover:border-rose-300 hover:shadow-xl hover:shadow-rose-100/60 transition-all cursor-pointer" onclick="openLightbox('${escapeHtml(photo.id)}')">
-                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_PHOTO}'"
+                    <div class="glass-card rounded-3xl p-4 sm:p-5 flex flex-col md:flex-row gap-5 items-center hover:border-rose-300 hover:shadow-xl hover:shadow-rose-100/60 transition-all cursor-pointer" data-id="${escapeHtml(photo.id)}" onclick="openLightbox(this.dataset.id)">
+                        <img src="${escapeHtml(safeImageUrl(photo.url, PLACEHOLDER_PHOTO))}" alt="${escapeHtml(photo.title)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${PLACEHOLDER_PHOTO}'"
                             class="w-full md:w-56 h-40 object-cover rounded-2xl shadow-md">
                         <div class="flex-grow space-y-1.5 w-full">
                             <div class="flex items-center gap-2 flex-wrap">
@@ -1147,6 +1215,12 @@
                     </div>
                 </div>
             `).join('');
+            markRendered(container);
+        }
+
+        // Render pertama memakai animasi masuk; render berikutnya (favorit, cari, filter) tidak
+        function markRendered(container) {
+            requestAnimationFrame(() => setTimeout(() => container.classList.add('no-anim'), 1200));
         }
 
         // --- Filter / Search / View ---
@@ -1158,9 +1232,13 @@
             renderGallery();
         }
 
+        let searchTimer = null;
         function handleSearch() {
-            currentSearchQuery = document.getElementById('search-input').value;
-            renderGallery();
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                currentSearchQuery = document.getElementById('search-input').value.trim();
+                renderGallery();
+            }, 150);
         }
 
         function switchView(mode) {
@@ -1230,7 +1308,7 @@
             if (photo.url && !photo.url.startsWith('data:')) {
                 document.getElementById('photo-url').value = photo.url;
             }
-            showPreview(photo.url);
+            showPreview(safeImageUrl(photo.url, PLACEHOLDER_PHOTO));
 
             document.getElementById('photo-modal').classList.remove('hidden');
         }
@@ -1249,7 +1327,7 @@
         function handleGoogleDriveInput(val) {
             if (!val.trim()) { removePreview(true); return; }
             const converted = parseGoogleDriveUrl(val.trim());
-            if (converted) {
+            if (/^https?:\/\//i.test(converted)) {
                 currentUploadedBase64 = converted;
                 showPreview(converted);
             }
@@ -1398,7 +1476,7 @@
             activeLightboxPhotoId = id;
             const img = document.getElementById('lb-image');
             img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_PHOTO; };
-            img.src = photo.url;
+            img.src = safeImageUrl(photo.url, PLACEHOLDER_PHOTO);
             document.getElementById('lb-title').innerText = photo.title;
             document.getElementById('lb-category').innerText = photo.category || 'Momen';
             document.getElementById('lb-date').innerText = formatDate(photo.date);
@@ -1435,13 +1513,17 @@
         }
 
         // --- Love counter ---
+        const cdEls = {};
         function updateLoveCounter() {
+            if (!cdEls.days) {
+                ['days', 'hours', 'mins', 'secs', 'note'].forEach(k => cdEls[k] = document.getElementById('cd-' + k));
+            }
             const diff = new Date() - anniversaryDate;
-            const note = document.getElementById('cd-note');
+            const note = cdEls.note;
 
             if (diff < 0) {
-                ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => document.getElementById(id).innerText = '0');
-                note.innerText = 'Hari istimewa segera tiba! · Ubah tanggal';
+                ['days', 'hours', 'mins', 'secs'].forEach(k => cdEls[k].textContent = '0');
+                note.textContent = 'Hari istimewa segera tiba! · Ubah tanggal';
                 return;
             }
 
@@ -1449,11 +1531,13 @@
             const hours = Math.floor((diff % 86400000) / 3600000);
             const minutes = Math.floor((diff % 3600000) / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
-            document.getElementById('cd-days').innerText = days.toLocaleString('id-ID');
-            document.getElementById('cd-hours').innerText = hours;
-            document.getElementById('cd-mins').innerText = minutes;
-            document.getElementById('cd-secs').innerText = seconds;
-            note.innerText = 'Sejak ' + formatDate(anniversaryDate.toISOString().slice(0, 10)) + ' · Ubah tanggal';
+            cdEls.days.textContent = days.toLocaleString('id-ID');
+            cdEls.hours.textContent = hours;
+            cdEls.mins.textContent = minutes;
+            cdEls.secs.textContent = seconds;
+            // Pakai tanggal lokal (toISOString() = UTC, di WIB tanggalnya mundur sehari)
+            const noteText = 'Sejak ' + anniversaryDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) + ' · Ubah tanggal';
+            if (note.textContent !== noteText) note.textContent = noteText;
         }
 
         function openCounterSettings() {
@@ -1482,6 +1566,7 @@
 
         // --- Hearts canvas ---
         function startHeartsCanvas() {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             const canvas = document.getElementById('hearts-canvas');
             const ctx = canvas.getContext('2d');
             let width = canvas.width = window.innerWidth;
@@ -1570,6 +1655,8 @@
                 toast.classList.add('translate-y-24', 'opacity-0');
             }, 3000);
         }
+
+        init();
     </script>
 </body>
 </html>
