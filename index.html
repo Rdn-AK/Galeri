@@ -137,6 +137,11 @@
         /* Viewer folder */
         #album-view-modal.full { padding: 0; }
         #album-view-modal.full #album-view-box { max-width: 100%; height: 100vh; border-radius: 0; }
+        .album-tile { break-inside: avoid; }
+        .album-tile img { opacity: 0; transition: opacity .5s, transform .6s cubic-bezier(.2,.8,.2,1); }
+        .album-tile.loaded img { opacity: 1; }
+        .album-tile:not(.loaded) { min-height: 160px; background: linear-gradient(110deg, #ffe4e6 30%, #fff1f2 50%, #ffe4e6 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+        @keyframes shimmer { to { background-position: -200% 0; } }
         .loader-ring { width: 38px; height: 38px; border-radius: 9999px; border: 3px solid #fecdd3; border-top-color: #f43f5e; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -540,21 +545,22 @@
     </div>
 
     <!-- MODAL: Viewer Folder -->
-    <div id="album-view-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-6">
-        <div id="album-view-box" class="modal-pop relative max-w-5xl w-full bg-white rounded-[28px] overflow-hidden shadow-2xl flex flex-col h-[90vh]">
-            <div class="relative px-5 sm:px-6 py-4 bg-gradient-to-r from-emerald-50 via-white to-rose-50 border-b border-emerald-100 flex items-center justify-between gap-3">
+    <div id="album-view-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-0 sm:p-6">
+        <div id="album-view-box" class="modal-pop relative max-w-6xl w-full bg-blush sm:rounded-[28px] overflow-hidden shadow-2xl flex flex-col h-[100dvh] sm:h-[90vh]">
+            <div class="relative px-4 sm:px-6 pt-4 pb-3 bg-gradient-to-r from-emerald-50 via-white to-rose-50 border-b border-emerald-100 flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                    <div class="flex items-center gap-2 mb-0.5">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
                         <span id="album-view-badge" class="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-white px-2.5 py-0.5 rounded-full">Pertemuan</span>
                         <span id="album-view-date" class="text-xs text-emerald-700 font-medium"></span>
+                        <span id="album-view-count" class="hidden text-xs text-slate-400"></span>
                     </div>
-                    <h3 id="album-view-title" class="font-serif text-xl sm:text-2xl font-bold text-emerald-950 leading-tight truncate">Judul Pertemuan</h3>
+                    <h3 id="album-view-title" class="font-serif text-lg sm:text-2xl font-bold text-emerald-950 leading-snug line-clamp-2">Judul Pertemuan</h3>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <a id="album-view-direct-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-emerald-600 text-white rounded-full text-xs font-medium hover:bg-emerald-700 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-200">
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <a id="album-view-direct-link" href="#" target="_blank" rel="noopener noreferrer" title="Buka di Google Drive" class="h-9 px-3 bg-emerald-600 text-white rounded-full text-xs font-medium hover:bg-emerald-700 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-200">
                         <i class="fa-brands fa-google-drive"></i> <span class="hidden sm:inline">Buka di Drive</span>
                     </a>
-                    <button type="button" onclick="toggleAlbumFullscreen()" title="Layar penuh" class="hidden sm:flex text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 w-9 h-9 rounded-full items-center justify-center transition-all">
+                    <button type="button" onclick="toggleAlbumFullscreen()" title="Layar penuh" aria-label="Layar penuh" class="hidden sm:flex text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 w-9 h-9 rounded-full items-center justify-center transition-all">
                         <i id="album-fs-icon" class="fa-solid fa-expand"></i>
                     </button>
                     <button type="button" onclick="closeAlbumViewModal()" aria-label="Tutup" class="text-slate-500 hover:text-rose-500 hover:bg-rose-50 w-9 h-9 rounded-full flex items-center justify-center transition-all">
@@ -563,22 +569,51 @@
                 </div>
             </div>
 
-            <div id="album-view-desc-box" class="px-6 py-3 bg-rose-50/50 border-b border-rose-100 text-slate-700 font-handwritten text-xl flex gap-2 items-start">
-                <i class="fa-solid fa-quote-left text-rose-300 text-sm mt-2"></i>
-                <span id="album-view-desc"></span>
-            </div>
+            <div id="album-scroll" class="flex-grow relative min-h-0 overflow-y-auto bg-gradient-to-b from-rose-50/70 via-blush to-emerald-50/40">
+                <div id="album-view-desc-box" class="mx-3 sm:mx-5 mt-4 px-4 py-3 bg-white/80 rounded-2xl border border-rose-100 text-slate-700 font-handwritten text-xl leading-snug flex gap-2 items-start shadow-sm">
+                    <i class="fa-solid fa-quote-left text-rose-300 text-sm mt-1.5"></i>
+                    <span id="album-view-desc"></span>
+                </div>
 
-            <div class="flex-grow relative bg-gradient-to-b from-rose-50/60 to-emerald-50/40 p-2 sm:p-3 min-h-0">
-                <div id="album-loader" class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-slate-400 text-xs">
+                <div id="album-loader" class="py-24 flex flex-col items-center justify-center gap-3 text-slate-400 text-xs">
                     <div class="loader-ring"></div>
                     <span>Memuat foto dari Drive...</span>
                 </div>
-                <iframe id="album-drive-iframe" src="about:blank" class="relative w-full h-full border-0 rounded-2xl bg-white shadow-inner"></iframe>
+
+                <!-- Grid foto buatan sendiri (bila Apps Script mendukung action=listFolder) -->
+                <div id="album-photo-grid" class="hidden p-3 sm:p-5 columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-4"></div>
+
+                <div id="album-empty" class="hidden py-20 text-center text-sm text-slate-500">
+                    <i class="fa-regular fa-images text-3xl text-rose-300 mb-2 block"></i>
+                    Belum ada foto di folder ini.
+                </div>
+
+                <!-- Cadangan: tampilan bawaan Google Drive -->
+                <div id="album-iframe-wrap" class="hidden absolute inset-0 p-2 sm:p-3">
+                    <iframe id="album-drive-iframe" src="about:blank" title="Folder Google Drive" class="w-full h-full border-0 rounded-2xl bg-white shadow-inner"></iframe>
+                </div>
             </div>
 
-            <div class="px-5 py-2 text-[11px] text-slate-400 bg-white border-t border-slate-100 flex items-center gap-1.5">
-                <i class="fa-solid fa-lightbulb text-amber-400"></i> Klik dua kali sebuah foto untuk membukanya, atau pakai tombol "Buka di Drive" untuk unduh.
+            <div id="album-view-hint" class="px-5 py-2 text-[11px] text-slate-400 bg-white border-t border-slate-100 flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-amber-400"></i> <span id="album-view-hint-text">Ketuk foto untuk melihat lebih besar.</span>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Penampil foto folder -->
+    <div id="photo-viewer" class="fixed inset-0 z-[65] hidden bg-slate-950/95 backdrop-blur-sm flex flex-col select-none">
+        <div class="flex items-center justify-between px-4 py-3 text-white/90">
+            <span id="pv-counter" class="text-xs bg-white/10 rounded-full px-3 py-1"></span>
+            <div class="flex items-center gap-2">
+                <a id="pv-open" href="#" target="_blank" rel="noopener noreferrer" class="nav-btn !w-9 !h-9" title="Buka / unduh di Drive" aria-label="Buka di Drive"><i class="fa-solid fa-arrow-up-right-from-square text-sm"></i></a>
+                <button type="button" onclick="closePhotoViewer()" class="nav-btn !w-9 !h-9" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <div id="pv-stage" class="relative flex-grow min-h-0 flex items-center justify-center px-2 sm:px-16 pb-6">
+            <div id="pv-spinner" class="loader-ring absolute"></div>
+            <img id="pv-image" src="" alt="Foto pertemuan" class="relative max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-opacity duration-300 opacity-0">
+            <button type="button" onclick="photoViewerStep(-1)" class="nav-btn absolute left-2 sm:left-4 top-1/2 -translate-y-1/2" aria-label="Sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
+            <button type="button" onclick="photoViewerStep(1)" class="nav-btn absolute right-2 sm:right-4 top-1/2 -translate-y-1/2" aria-label="Berikutnya"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
     </div>
 
@@ -654,6 +689,7 @@
         }
 
         const MODAL_CLOSERS = {
+            'photo-viewer': () => closePhotoViewer(),
             'delete-modal': () => closeDeleteModal(),
             'photo-modal': () => closePhotoModal(),
             'lightbox-modal': () => closeLightbox(),
@@ -674,6 +710,10 @@
             const lbOpen = lb && !lb.classList.contains('hidden');
             const deleteOpen = !document.getElementById('delete-modal').classList.contains('hidden');
 
+            if (!document.getElementById('photo-viewer').classList.contains('hidden')) {
+                if (e.key === 'ArrowRight') { photoViewerStep(1); return; }
+                if (e.key === 'ArrowLeft') { photoViewerStep(-1); return; }
+            }
             if (lbOpen && !deleteOpen) {
                 if (e.key === 'ArrowRight') { lightboxStep(1); return; }
                 if (e.key === 'ArrowLeft') { lightboxStep(-1); return; }
@@ -747,6 +787,7 @@
                 if (result && result.status && result.status !== 'success') {
                     throw new Error(result.message || 'Apps Script mengembalikan error');
                 }
+                applyServerUrlMap(result && result.urlMap);
                 if (versionAtSend === localVersion) {
                     try { localStorage.removeItem(PENDING_SYNC_KEY); } catch (e) {}
                 }
@@ -758,6 +799,23 @@
                 syncInFlight = false;
                 if (versionAtSend !== localVersion) scheduleSync();
             }
+        }
+
+        // Server menyimpan foto upload (base64) ke Google Drive dan membalas link-nya.
+        // Ganti base64 di data lokal dengan link itu: hemat localStorage & kiriman berikutnya.
+        function applyServerUrlMap(urlMap) {
+            if (!urlMap || typeof urlMap !== 'object') return;
+            let changed = false;
+            photos.forEach(p => {
+                const u = urlMap[p.id];
+                if (u && typeof p.url === 'string' && p.url.startsWith('data:') && /^https:\/\//.test(u)) {
+                    p.url = u;
+                    changed = true;
+                }
+            });
+            if (!changed) return;
+            try { writeLocalStorage(); } catch (e) { console.warn(e); }
+            renderGallery();
         }
 
         async function loadFromGoogleSheets() {
@@ -1056,40 +1114,112 @@
             }
         }
 
-        function openAlbumViewModal(id) {
+        // Daftar foto folder diambil lewat Apps Script (action=listFolder). Bila belum tersedia,
+        // jatuh kembali ke tampilan bawaan Google Drive (iframe).
+        const folderCache = new Map();
+        let albumViewToken = 0;
+        let albumFiles = [];
+        let viewerIndex = 0;
+
+        async function fetchFolderFiles(folderId) {
+            if (folderCache.has(folderId)) return folderCache.get(folderId);
+            if (!hasSyncUrl() || !folderId) return null;
+            try {
+                const sep = GOOGLE_APPS_SCRIPT_URL.includes('?') ? '&' : '?';
+                const res = await fetch(`${GOOGLE_APPS_SCRIPT_URL}${sep}action=listFolder&id=${encodeURIComponent(folderId)}`);
+                if (!res.ok) return null;
+                const json = await res.json();
+                if (json && json.status === 'success' && Array.isArray(json.files)) {
+                    const files = json.files.filter(f => f && /^[a-zA-Z0-9_-]+$/.test(f.id));
+                    folderCache.set(folderId, files);
+                    return files;
+                }
+            } catch (err) {
+                console.warn('listFolder gagal, pakai tampilan Drive:', err);
+            }
+            return null;
+        }
+
+        function driveThumb(id, w) { return `https://lh3.googleusercontent.com/d/${id}=w${w}`; }
+
+        function tileImgError(img) {
+            const tile = img.closest('.album-tile');
+            if (!img.dataset.retried) {
+                img.dataset.retried = '1';
+                img.src = `https://drive.google.com/thumbnail?id=${tile.dataset.fid}&sz=w600`;
+            } else {
+                img.onerror = null;
+                img.src = PLACEHOLDER_PHOTO;
+            }
+        }
+
+        function setAlbumMode(mode) {
+            document.getElementById('album-loader').classList.toggle('hidden', mode !== 'loading');
+            document.getElementById('album-photo-grid').classList.toggle('hidden', mode !== 'grid');
+            document.getElementById('album-empty').classList.toggle('hidden', mode !== 'empty');
+            document.getElementById('album-iframe-wrap').classList.toggle('hidden', mode !== 'iframe');
+            document.getElementById('album-view-desc-box').classList.toggle('hidden', mode === 'iframe' || !document.getElementById('album-view-desc').textContent);
+            document.getElementById('album-view-hint-text').textContent = mode === 'iframe'
+                ? 'Klik dua kali sebuah foto untuk membukanya, atau pakai tombol "Buka di Drive" untuk unduh.'
+                : 'Ketuk foto untuk melihat lebih besar. Geser kiri/kanan untuk pindah foto.';
+        }
+
+        function renderAlbumGrid(files) {
+            const grid = document.getElementById('album-photo-grid');
+            grid.innerHTML = files.map((f, i) => `
+                <button type="button" class="album-tile group relative block w-full mb-3 sm:mb-4 rounded-2xl overflow-hidden bg-white shadow-md shadow-rose-200/50 ring-1 ring-rose-100 hover:shadow-xl hover:shadow-rose-200/70 transition-shadow"
+                    data-fid="${f.id}" data-idx="${i}" onclick="openPhotoViewer(+this.dataset.idx)" aria-label="${escapeHtml(f.name || 'Foto')}">
+                    <img src="${driveThumb(f.id, 600)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+                        onload="this.closest('.album-tile').classList.add('loaded')" onerror="tileImgError(this)"
+                        class="w-full h-auto block group-hover:scale-[1.04]">
+                    <span class="absolute inset-0 bg-gradient-to-t from-rose-900/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                </button>`).join('');
+        }
+
+        async function openAlbumViewModal(id) {
             const album = albums.find(a => a.id === id);
             if (!album) return;
+            const token = ++albumViewToken;
 
             const folderId = extractDriveFolderId(album.driveUrl);
             document.getElementById('album-view-title').innerText = album.title;
             document.getElementById('album-view-date').innerText = formatDate(album.date);
             document.getElementById('album-view-badge').innerText = 'Pertemuan #' + getMeetingNumber(album.id);
             document.getElementById('album-view-direct-link').href = safeLinkUrl(album.driveUrl);
+            document.getElementById('album-view-desc').innerText = album.description || '';
+            document.getElementById('album-view-count').classList.add('hidden');
+            document.getElementById('album-scroll').scrollTop = 0;
 
-            const descBox = document.getElementById('album-view-desc-box');
-            if (album.description) {
-                document.getElementById('album-view-desc').innerText = album.description;
-                descBox.classList.remove('hidden');
-                descBox.classList.add('flex');
-            } else {
-                descBox.classList.add('hidden');
-                descBox.classList.remove('flex');
+            setAlbumMode('loading');
+            document.getElementById('album-view-modal').classList.remove('hidden');
+
+            const files = await fetchFolderFiles(folderId);
+            if (token !== albumViewToken) return; // modal ditutup / album lain dibuka
+
+            if (files) {
+                albumFiles = files;
+                const count = document.getElementById('album-view-count');
+                count.textContent = `· ${files.length} foto`;
+                count.classList.remove('hidden');
+                if (files.length) { renderAlbumGrid(files); setAlbumMode('grid'); }
+                else setAlbumMode('empty');
+                return;
             }
 
-            const loader = document.getElementById('album-loader');
+            albumFiles = [];
             const iframe = document.getElementById('album-drive-iframe');
-            loader.classList.remove('hidden');
             iframe.onload = function () {
-                if (iframe.src.startsWith('https://drive.google.com')) loader.classList.add('hidden');
+                if (token === albumViewToken && iframe.src.startsWith('https://drive.google.com')) setAlbumMode('iframe');
             };
             iframe.src = `https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#grid`;
-            document.getElementById('album-view-modal').classList.remove('hidden');
         }
 
         function closeAlbumViewModal() {
+            albumViewToken++;
             const iframe = document.getElementById('album-drive-iframe');
             iframe.onload = null;
             iframe.src = 'about:blank';
+            document.getElementById('album-photo-grid').innerHTML = '';
             const modal = document.getElementById('album-view-modal');
             modal.classList.add('hidden');
             modal.classList.remove('full');
@@ -1101,6 +1231,60 @@
             const isFull = modal.classList.toggle('full');
             document.getElementById('album-fs-icon').className = isFull ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
         }
+
+        // --- Penampil foto folder ---
+        function openPhotoViewer(idx) {
+            if (!albumFiles.length) return;
+            document.getElementById('photo-viewer').classList.remove('hidden');
+            showViewerPhoto(idx);
+        }
+
+        function showViewerPhoto(idx) {
+            const n = albumFiles.length;
+            viewerIndex = (idx + n) % n;
+            const f = albumFiles[viewerIndex];
+            const img = document.getElementById('pv-image');
+            const spinner = document.getElementById('pv-spinner');
+            img.classList.add('opacity-0');
+            spinner.classList.remove('hidden');
+            img.onload = () => { img.classList.remove('opacity-0'); spinner.classList.add('hidden'); };
+            img.onerror = () => {
+                if (!img.dataset.retried) { img.dataset.retried = '1'; img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`; }
+                else { spinner.classList.add('hidden'); img.src = PLACEHOLDER_PHOTO; }
+            };
+            delete img.dataset.retried;
+            img.src = driveThumb(f.id, 2000);
+            document.getElementById('pv-counter').textContent = `${viewerIndex + 1} / ${n}`;
+            document.getElementById('pv-open').href = `https://drive.google.com/file/d/${f.id}/view`;
+            // Muat lebih dulu foto berikutnya agar terasa instan
+            if (n > 1) new Image().src = driveThumb(albumFiles[(viewerIndex + 1) % n].id, 2000);
+        }
+
+        function photoViewerStep(dir) {
+            if (albumFiles.length > 1) showViewerPhoto(viewerIndex + dir);
+        }
+
+        function closePhotoViewer() {
+            document.getElementById('photo-viewer').classList.add('hidden');
+            const img = document.getElementById('pv-image');
+            img.onload = img.onerror = null;
+            img.src = '';
+        }
+
+        // Geser (swipe) di HP; ketuk area kosong untuk menutup
+        (function setupViewerSwipe() {
+            const stage = document.getElementById('pv-stage');
+            stage.addEventListener('click', e => { if (e.target === stage) closePhotoViewer(); });
+            let x0 = null, y0 = null;
+            stage.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+            stage.addEventListener('touchend', e => {
+                if (x0 === null) return;
+                const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) photoViewerStep(dx < 0 ? 1 : -1);
+                else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) closePhotoViewer();
+                x0 = y0 = null;
+            }, { passive: true });
+        })();
 
         // --- Photos rendering ---
         function getFilteredPhotos() {
