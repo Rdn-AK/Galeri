@@ -1,7 +1,12 @@
 # Galeri
-## Tampilan foto per folder
+## Google Apps Script
 
-Agar foto di folder pertemuan tampil sebagai grid yang rapi (bukan tampilan bawaan Google Drive),
-tambahkan fungsi di [`apps-script/listFolder.gs`](apps-script/listFolder.gs) ke Google Apps Script
-dan deploy ulang. Petunjuk lengkap ada di bagian atas file tersebut. Tanpa langkah ini halaman tetap
-berfungsi dan memakai tampilan bawaan Google Drive.
+Kode lengkap backend ada di [`apps-script/Code.gs`](apps-script/Code.gs). Petunjuk pemasangan
+dan cara memperbarui deployment (tanpa mengganti URL `/exec`) ada di bagian atas file tersebut.
+
+Fitur:
+- Sinkron data album, foto, dan tanggal jadian ke Google Sheets.
+- Daftar foto per folder pertemuan (`action=listFolder`) sehingga halaman bisa menampilkan
+  grid foto sendiri. Tanpa ini halaman memakai tampilan bawaan Google Drive.
+- Foto yang diunggah dari HP/PC disimpan sebagai file di Google Drive (folder
+  "Galeri Kenangan - Upload"), karena satu sel Sheets hanya muat 50.000 karakter.

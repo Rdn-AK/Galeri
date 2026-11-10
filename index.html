@@ -787,6 +787,7 @@
                 if (result && result.status && result.status !== 'success') {
                     throw new Error(result.message || 'Apps Script mengembalikan error');
                 }
+                applyServerUrlMap(result && result.urlMap);
                 if (versionAtSend === localVersion) {
                     try { localStorage.removeItem(PENDING_SYNC_KEY); } catch (e) {}
                 }
@@ -798,6 +799,23 @@
                 syncInFlight = false;
                 if (versionAtSend !== localVersion) scheduleSync();
             }
+        }
+
+        // Server menyimpan foto upload (base64) ke Google Drive dan membalas link-nya.
+        // Ganti base64 di data lokal dengan link itu: hemat localStorage & kiriman berikutnya.
+        function applyServerUrlMap(urlMap) {
+            if (!urlMap || typeof urlMap !== 'object') return;
+            let changed = false;
+            photos.forEach(p => {
+                const u = urlMap[p.id];
+                if (u && typeof p.url === 'string' && p.url.startsWith('data:') && /^https:\/\//.test(u)) {
+                    p.url = u;
+                    changed = true;
+                }
+            });
+            if (!changed) return;
+            try { writeLocalStorage(); } catch (e) { console.warn(e); }
+            renderGallery();
         }
 
         async function loadFromGoogleSheets() {
